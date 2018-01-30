@@ -1,9 +1,9 @@
 /**
- CarloweAuto.java
+ shooterAuto.java
 
- A Linear OpMode class to be an autonomous method for both Blue & Red where
- we pick which stone we are on with gamepad1 and knock the jewel off and
- place a glyph or two into the cryptobox.
+ A Linear opmode class to be an autonomous method for both Blue w Red to either just shoot
+ the balls into the center vortex, shoot the balls and then park under the center vortex, or
+ shoot the balls and park on the corner vortex.
 
  This file is a modified version from the FTC SDK.
 
@@ -51,8 +51,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 
-@Autonomous(name="Caolowe Autonomous", group="CatAuto")
-public class CarloweAutonomous extends LinearOpMode {
+@Autonomous(name="NaLu Autonomous", group="CatAuto")
+public class NaLuAutonomous extends LinearOpMode {
 
     /* Declare OpMode members. */
     HardwareCatBot robot = new HardwareCatBot();   // Use a Pushbot's hardware
@@ -64,7 +64,6 @@ public class CarloweAutonomous extends LinearOpMode {
 
     private HardwareCatBot.StonePos stonePos = HardwareCatBot.StonePos.Nah;
 
-
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -72,7 +71,7 @@ public class CarloweAutonomous extends LinearOpMode {
          * Initialize the drive system variables.
          * The init() method of the hardware class does all the work here
          */
-        robot.init(hardwareMap, this, true, false);
+        robot.init(hardwareMap, this, true, true);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Resetting Encoders");    //
@@ -102,18 +101,18 @@ public class CarloweAutonomous extends LinearOpMode {
                 return;
             }
             // increase if up is pressed and it's been 0.2 seconds since last push
-            if (gamepad1.dpad_up && (delaytimer.seconds() > 1.5)) {
+            if (gamepad1.dpad_up && (delaytimer.seconds() > 0.8)) {
                 timeDelay += 1;
                 delaytimer.reset();
             }
             // decrease if down is pressed and it's been 0.2 seconds since last push
-            if (gamepad1.dpad_down && (delaytimer.seconds() > 1.5)) {
+            if (gamepad1.dpad_down && (delaytimer.seconds() > 0.8)) {
                 if (timeDelay > 0) {
                     timeDelay -= 1;
                 }
                 delaytimer.reset();
             }
-            if (((gamepad1.dpad_left) && delaytimer.seconds() > 1.5)) {
+            if (((gamepad1.dpad_left) && delaytimer.seconds() > 0.8)) {
                 if (isRedMission) {
                     isRedMission = false;
                 } else {
@@ -121,7 +120,7 @@ public class CarloweAutonomous extends LinearOpMode {
                 }
             }
 
-            if (gamepad1.dpad_right && delaytimer.seconds() > 1.5) {
+            if (gamepad1.dpad_right && delaytimer.seconds() > 0.8) {
                 if (stonePos == HardwareCatBot.StonePos.Audience) {
                     stonePos = HardwareCatBot.StonePos.Nah;
                 } else {

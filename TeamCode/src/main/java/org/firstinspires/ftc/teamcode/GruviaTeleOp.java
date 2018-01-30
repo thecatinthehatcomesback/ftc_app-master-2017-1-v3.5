@@ -1,5 +1,5 @@
 /*
-    ShulesTeleOp.java
+    FrancisTeleOp.java
 
     A Linear opmode class to be our main teleop method
 
@@ -60,13 +60,15 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Shules TeleOp", group="CatTeleOp")
+@TeleOp(name="Gruvia TeleOp", group="CatTeleOp")
 
-public class ShulesTeleOp extends LinearOpMode {
+public class GruviaTeleOp extends LinearOpMode {
 
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
     private ElapsedTime driveModeSwitch     = new ElapsedTime();
+    private ElapsedTime liftArmSwitch       = new ElapsedTime();
+    private ElapsedTime gripperArmSwitch    = new ElapsedTime();
     private HardwareCatBot.TeleOpDriveMode driveMode = HardwareCatBot.TeleOpDriveMode.TankDrive;
 
 
@@ -74,7 +76,7 @@ public class ShulesTeleOp extends LinearOpMode {
     HardwareCatBot robot; // use the class created for the hardware
 
     // constructor for class
-    public ShulesTeleOp() {
+    public GruviaTeleOp() {
         robot = new HardwareCatBot();
     }
 
@@ -82,7 +84,7 @@ public class ShulesTeleOp extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         // Initialize/INIT the hardware
-        robot.init(hardwareMap, this, false, false);
+        robot.init(hardwareMap, this, false, true);
         robot.gripperMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         telemetry.addData("Status", "Initialized...  BOOM!");
         telemetry.update();
@@ -180,23 +182,27 @@ public class ShulesTeleOp extends LinearOpMode {
              */
 
             // lifter motor code //
-            //// TODO: 1/27/2018 Add touch sensors to robot to detect the top and bottom of the lifter arm
+            if (gamepad2.x && liftArmSwitch.seconds() > .2) {
+                robot.lifterStepDown();     // go next level up
+                liftArmSwitch.reset();      //  Reset the time so we don't just stack it up infinitely
+            } else if (gamepad2.y  && liftArmSwitch.seconds() > .2) {
+                robot.lifterStepUp();       //  go next level down
+                liftArmSwitch.reset();      //  Reset the time so we don't just stack it up infinitely
+            } else if (gamepad2.b  && liftArmSwitch.seconds() > .2) {
+                robot.lifterCurrentStep();  //  set to current pos if we have added since then
+                liftArmSwitch.reset();      //  Reset the time so we don't just stack it up infinitely
+            } else if (gamepad2.a  && liftArmSwitch.seconds() > .2) {
+                robot.lifterMotor.setTargetPosition(robot.lifterMotor.getTargetPosition() + 4);  // Add a little extra to lifter
+                liftArmSwitch.reset();      //  Reset the time so we don't just stack it up infinitely
+            }
             robot.lifterMotor.setTargetPosition(limitRange(robot.lifterMotor.getTargetPosition() + Math.round(-gamepad2.right_stick_y * 25), -10, 1350));
             robot.adjustArm();
 
-            //// TODO: 1/27/2018 Find out which one needs the negatory
-            // code for the intake motors //
-            robot.intakeMotorLeft.setPower(gamepad2.left_trigger);
-            robot.intakeMotorRight.setPower(gamepad2.right_trigger);
-            if (gamepad2.left_bumper){
-                robot.intakeMotorLeft.setPower(-0.5);
-            }
-            if (gamepad2.right_bumper){
-                robot.intakeMotorRight.setPower(-0.5);
-            }
+            // gripper code //
+            robot.gripperMotor.setPower(gamepad2.left_stick_x * 0.3);
 
             // jewel smacker //
-            if (gamepad2.dpad_up) {
+            if (gamepad2.left_bumper) {
                 robot.jewelSmackerUp();
             }
 
@@ -206,7 +212,8 @@ public class ShulesTeleOp extends LinearOpMode {
              * ---   \/ \/ \/    ---
              */
             telemetry.addData("ArmIndex Pos:", robot.armIndex);
-            telemetry.addData("(GP2.right_stick) LiterPos", "Target: %2d Current: %2d", robot.lifterMotor.getTargetPosition(), robot.lifterMotor.getCurrentPosition());
+            telemetry.addData("(GP2.x&y) LiterPos", "Target: %2d Current: %2d", robot.lifterMotor.getTargetPosition(), robot.lifterMotor.getCurrentPosition());
+            telemetry.addData("(GP2.a&b) gripper pos:","Target: %2d Current: %2d", robot.gripperMotor.getTargetPosition(), robot.gripperMotor.getCurrentPosition());
             telemetry.addData("(GP1.x + y + dPadUp)DriveMode:", driveMode);
             telemetry.addData("Left Power:", "%.2f", left);
             telemetry.addData("Right Power:", "%.2f", right);
@@ -214,7 +221,6 @@ public class ShulesTeleOp extends LinearOpMode {
             idle();
         }
     }
-
     public int limitRange(int number, int min, int max) {
         return Math.min(Math.max(number, min), max);
     }
