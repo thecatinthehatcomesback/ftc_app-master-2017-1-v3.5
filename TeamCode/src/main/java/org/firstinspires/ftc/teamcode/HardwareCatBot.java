@@ -57,6 +57,8 @@ public class HardwareCatBot
     public DcMotor  gripperMotor = null;
     public DcMotor  intakeMotorRight = null;
     public DcMotor  intakeMotorLeft = null;
+    public DcMotor  LEDblue = null;
+    public DcMotor  LEDred = null;
 
 
     //ModernRoboticsI2cRangeSensor andPeggy;
@@ -85,6 +87,8 @@ public class HardwareCatBot
     static final double     JEWEL_UP                = 0.9;
     static final double     JEWEL_DOWN              = 0.35;
 
+    static final double     LEDpower                = 0.7;
+
 
     enum DRIVE_MODE {
         driveStraight,
@@ -100,10 +104,10 @@ public class HardwareCatBot
         COAST
     }
 
-    enum StonePos {
-        Nah,
-        Audience
-
+    enum LED_LightUpType {
+        RED,
+        BLUE,
+        BOTH
     }
 
     /**
@@ -118,11 +122,17 @@ public class HardwareCatBot
         LEFT
     }
 
+    enum StonePos {
+        Nah,
+        Audience
+    }
+
     // enum for TeleOp Driving mode
     enum TeleOpDriveMode {
         TankDrive,
         SingleStick
     }
+
     // The IMU sensor object
     BNO055IMU imu;
 
@@ -167,6 +177,8 @@ public class HardwareCatBot
             intakeMotorRight.setPower(0);
             intakeMotorLeft.setPower(0);
         }
+        LEDblue        = hwMap.dcMotor.get("led_blue");
+        LEDred         = hwMap.dcMotor.get("led_red");
         jewelSmacker   = hwMap.servo.get("quality_jewel_smackage");
         jewelColors    = hwMap.colorSensor.get("seeing_red_makes_u_blue");
 
@@ -183,6 +195,8 @@ public class HardwareCatBot
         leftMotor.setPower(0);
         rightMotor.setPower(0);
         lifterMotor.setPower(0);
+        LEDblue.setPower(0);
+        LEDred.setPower(0);
 
         // Set jewel smacker up
         jewelSmackerUp();
@@ -551,7 +565,7 @@ public class HardwareCatBot
     public void robotWait(double seconds) {
         ElapsedTime delaytimer = new ElapsedTime();
         while (opMode.opModeIsActive()  &&  (delaytimer.seconds() < seconds)){
-            adjustArm();
+            periodicTask();
             adjustGripper();
             opMode.idle();
             }
@@ -597,12 +611,12 @@ public class HardwareCatBot
 
 }
     /*
-    AdjustArm - call periodically and the motor will slowly move toward the "target"
+    periodicTask - call periodically and the motor will slowly move toward the "target"
         This replaces setting the servo directly - causes the motor to move a bit slower
         which we hope will keep the gears from stripping when it moves between armPositions.
      */
-    public void adjustArm()  {
-
+    public void periodicTask()  {
+        // adjustArm code...
         /*if (Math.abs(lifterMotor.getCurrentPosition() - lifterMotor.getTargetPosition()) > 7) {
             lifterMotor.setPower(0.35);
         } else {
@@ -616,6 +630,13 @@ public class HardwareCatBot
                 lifterMotor.setPower(0.0);
             }
         }*/
+
+        // Code for blinky
+        ElapsedTime endgameOfAuto = new ElapsedTime();
+        if (endgameOfAuto.seconds() > 110) {
+
+        }
+
     }
 
 
@@ -739,6 +760,30 @@ public class HardwareCatBot
         }
         return SOCKmission.CENTER;
     }
+    /**
+     * ---   __________________   ---
+     * ---   LED light Methods    ---
+     * ---   \/ \/ \/ \/ \/ \/    ---
+     */
+    public void LEDlights(boolean redOn, boolean blueOn) {
+        /* yo turn on LED lights!!! */
+
+        if (blueOn) { // Turn on the Blue Lights...
+            LEDblue.setPower(LEDpower);
+        } else { // Turn off the Blue Lights...
+            LEDblue.setPower(0);
+        }
+        if (redOn) { // Turn on the Red Lights...
+            LEDred.setPower(LEDpower);
+        } else { // Turn off the Blue Lights...
+            LEDred.setPower(0);
+        }
+    }
+
+    public void blinky(int numTimes, LED_LightUpType type) {
+        /* yo turn on LED lights and make them BLINK! */
+
+    }
 
 
     /**
@@ -749,5 +794,6 @@ public class HardwareCatBot
     public void stuffishable() {
         /* Placeholder... */
     }
+
 
 }// End of class bracket
