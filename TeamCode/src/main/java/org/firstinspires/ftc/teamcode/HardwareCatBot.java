@@ -780,9 +780,17 @@ public class HardwareCatBot
         }
     }
 
-    public void blinky(int numTimes, LED_LightUpType type) {
+    public void blinky(int numTimes, double blinkLength, LED_LightUpType type) {
         /* yo turn on LED lights and make them BLINK! */
+        if (type == LED_LightUpType.BLUE) {
 
+        } else if (type == LED_LightUpType.RED) {
+
+        } else if (type == LED_LightUpType.BOTH) {
+
+        } else {
+            LEDlights(false, false);
+        }
     }
 
 
