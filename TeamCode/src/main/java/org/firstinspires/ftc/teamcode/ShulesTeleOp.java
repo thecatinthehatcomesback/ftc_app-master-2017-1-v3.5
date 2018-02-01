@@ -44,7 +44,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
@@ -83,7 +82,6 @@ public class ShulesTeleOp extends LinearOpMode {
 
         // Initialize/INIT the hardware
         robot.init(hardwareMap, this, false, false);
-        robot.gripperMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         telemetry.addData("Status", "Initialized...  BOOM!");
         telemetry.update();
 
@@ -91,6 +89,8 @@ public class ShulesTeleOp extends LinearOpMode {
         waitForStart();
         // Set jewel smacker to up pos
         robot.jewelSmackerUp();  // Init After start b/c it was called a "major movement"... ugh!
+        robot.blinkyTimer.reset();
+        robot.endgameOfAuto.reset();
 
         // go
         runtime.reset();
@@ -101,8 +101,13 @@ public class ShulesTeleOp extends LinearOpMode {
         while (opModeIsActive()) {
 
             if (runtime.seconds() > 240){
-                telemetry.addData("Arm:", "dead");
+                telemetry.addData("Arm: ", "dead");
                 break;
+            }
+
+            robot.periodicTask();
+            if (robot.numTimes == 4) {
+                telemetry.addData("Status: ", "numTimes = 4");
             }
 
             /**
@@ -181,10 +186,9 @@ public class ShulesTeleOp extends LinearOpMode {
 
             // lifter motor code //
             //// TODO: 1/27/2018 Add touch sensors to robot to detect the top and bottom of the lifter arm
-            robot.lifterMotor.setTargetPosition(limitRange(robot.lifterMotor.getTargetPosition() + Math.round(-gamepad2.right_stick_y * 25), -10, 1350));
+            robot.lifterMotor.setPower(-gamepad2.right_stick_y);
             robot.periodicTask();
 
-            //// TODO: 1/27/2018 Find out which one needs the negatory
             // code for the intake motors //
             robot.intakeMotorLeft.setPower(gamepad2.left_trigger);
             robot.intakeMotorRight.setPower(gamepad2.right_trigger);

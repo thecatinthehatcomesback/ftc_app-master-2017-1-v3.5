@@ -107,7 +107,8 @@ public class HardwareCatBot
     enum LED_LightUpType {
         RED,
         BLUE,
-        BOTH
+        BOTH,
+        NONE
     }
 
     /**
@@ -147,6 +148,11 @@ public class HardwareCatBot
     private ElapsedTime period  = new ElapsedTime();
     private int baseClear;
 
+    // Stuff
+    public ElapsedTime endgameOfAuto = new ElapsedTime();
+    public ElapsedTime blinkyTimer = new ElapsedTime();
+    public int numTimes = 0;
+
     /* Constructor */
     public HardwareCatBot(){
 
@@ -172,8 +178,8 @@ public class HardwareCatBot
         } else {
             intakeMotorRight = hwMap.dcMotor.get("right_intake_motor");
             intakeMotorLeft  = hwMap.dcMotor.get("left_intake_motor");
-            intakeMotorRight.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD
-            intakeMotorLeft.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD
+            intakeMotorRight.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD
+            intakeMotorLeft.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD
             intakeMotorRight.setPower(0);
             intakeMotorLeft.setPower(0);
         }
@@ -267,7 +273,9 @@ public class HardwareCatBot
             relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
             relicTemplate = relicTrackables.get(0);
             relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
+
         }
+
     }
     public void drive(double left, double right) {
 
@@ -631,12 +639,23 @@ public class HardwareCatBot
             }
         }*/
 
+        // After the blinkLength turn the LEDs off...
+
         // Code for blinky
-        ElapsedTime endgameOfAuto = new ElapsedTime();
-        if (endgameOfAuto.seconds() > 110) {
-
+        if (endgameOfAuto.seconds() > 10 && numTimes < 4) {
+            if (blinkyTimer.milliseconds() > 500) { // if time greater than .5 sec...
+                // turn on lights and reset timer...
+                blinky(LED_LightUpType.NONE);
+                if (blinkyTimer.milliseconds() > 1000) { // then if time is greater than 1 sec...
+                    // turn off the lights and reset the timer...
+                    blinkyTimer.reset();
+                    numTimes++;
+                }
+            } else {
+                // Turn on LED
+                blinky(LED_LightUpType.BOTH);
+            }
         }
-
     }
 
 
@@ -765,7 +784,7 @@ public class HardwareCatBot
      * ---   LED light Methods    ---
      * ---   \/ \/ \/ \/ \/ \/    ---
      */
-    public void LEDlights(boolean redOn, boolean blueOn) {
+    public void LEDlights(boolean blueOn, boolean redOn) {
         /* yo turn on LED lights!!! */
 
         if (blueOn) { // Turn on the Blue Lights...
@@ -780,17 +799,20 @@ public class HardwareCatBot
         }
     }
 
-    public void blinky(int numTimes, double blinkLength, LED_LightUpType type) {
+    public void blinky(LED_LightUpType type) {
         /* yo turn on LED lights and make them BLINK! */
+
+        // Blink the lights!
         if (type == LED_LightUpType.BLUE) {
-
+            LEDlights(true, false);
         } else if (type == LED_LightUpType.RED) {
-
+            LEDlights(false, true);
         } else if (type == LED_LightUpType.BOTH) {
-
-        } else {
+            LEDlights(true, true);
+        } else if (type == LED_LightUpType.NONE) {
             LEDlights(false, false);
         }
+
     }
 
 
