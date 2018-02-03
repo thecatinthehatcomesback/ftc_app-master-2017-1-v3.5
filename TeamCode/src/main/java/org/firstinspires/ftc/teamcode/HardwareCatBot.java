@@ -175,6 +175,8 @@ public class HardwareCatBot
             gripperMotor.setPower(0);
             gripperMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);    // Reset the gripperMotor when we init
             gripperMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);           // Set gripperMotor to RUN_TO_POSITION
+            lifterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);    // Reset the liftMotor when we init
+            lifterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);           // Set lifterMotor to RUN_TO_POSITION
         } else {
             intakeMotorRight = hwMap.dcMotor.get("right_intake_motor");
             intakeMotorLeft  = hwMap.dcMotor.get("left_intake_motor");
@@ -182,6 +184,8 @@ public class HardwareCatBot
             intakeMotorLeft.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD
             intakeMotorRight.setPower(0);
             intakeMotorLeft.setPower(0);
+            lifterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);    // Reset the liftMotor when we init
+            lifterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);           // Set lifterMotor to RUN_TO_POSITION
         }
         LEDblue        = hwMap.dcMotor.get("led_blue");
         LEDred         = hwMap.dcMotor.get("led_red");
@@ -194,8 +198,6 @@ public class HardwareCatBot
 
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);         // Set leftMotor to RUN_WITHOUT_ENCODER
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);        // Set rightMotor to RUN_WITHOUT_ENCODER
-        lifterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);    // Reset the liftMotor when we init
-        lifterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);           // Set lifterMotor to RUN_TO_POSITION
 
         // Set all motors to zero power //
         leftMotor.setPower(0);
@@ -574,7 +576,7 @@ public class HardwareCatBot
         ElapsedTime delaytimer = new ElapsedTime();
         while (opMode.opModeIsActive()  &&  (delaytimer.seconds() < seconds)){
             periodicTask();
-            adjustGripper();
+            //adjustGripper();
             opMode.idle();
             }
     }
@@ -586,13 +588,13 @@ public class HardwareCatBot
      */
     //  An array of the values for the different lifter arm positions...
     private int armPositions[] = {
-                   // LifterArm moves a total of 3/8 of a turn
-            0,     // Resting
-            300,   // Less Resting
-            675,   // pos 1 (...)
-            925,   // pos 2 (...)
-            1200,  // pos 3 (...)
-            1350,  // pos 4 (Highest)
+                    // LifterArm moves a total of 3/8 of a turn
+            0,      // 0,     // Resting
+            3000,   //300,   // Less Resting
+            6000,   //675,   // pos 1 (...)
+            9000,   //925,   // pos 2 (...)
+            12000,  //1200,  // pos 3 (...)
+            16700,  //1350,  // pos 4 (Highest)
     };
     public int armIndex = 0;
     public void lifterStepDown() {
@@ -657,7 +659,23 @@ public class HardwareCatBot
             }
         }
     }
-
+    /**
+     * ---   _________________________________   ---
+     * ---     Code for our Mecanum input! :D    ---
+     * ---   \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/    ---
+     */
+    public void mecanumOut() {
+        intakeMotorLeft.setPower(-0.3);
+        intakeMotorRight.setPower(-0.3);
+    }
+    public void mecanumIn() {
+        intakeMotorLeft.setPower(0.3);
+        intakeMotorRight.setPower(0.3);
+    }
+    public void mecanumStop() {
+        intakeMotorLeft.setPower(0);
+        intakeMotorRight.setPower(0);
+    }
 
     /**
      * ---   ________________________   ---

@@ -186,7 +186,7 @@ public class ShulesTeleOp extends LinearOpMode {
 
             // lifter motor code //
             //// TODO: 1/27/2018 Add touch sensors to robot to detect the top and bottom of the lifter arm
-            robot.lifterMotor.setPower(-gamepad2.right_stick_y);
+            robot.lifterMotor.setPower(gamepad2.right_stick_y);
             robot.periodicTask();
 
             // code for the intake motors //

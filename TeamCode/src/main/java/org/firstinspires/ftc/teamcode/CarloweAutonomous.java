@@ -45,13 +45,14 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 
-@Autonomous(name="Caolowe Autonomous", group="CatAuto")
+@Autonomous(name="Carlowe Autonomous", group="CatAuto")
 public class CarloweAutonomous extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -73,6 +74,7 @@ public class CarloweAutonomous extends LinearOpMode {
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap, this, true, false);
+        robot.lifterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);           // Set lifterMotor to RUN_TO_POSITION
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Resetting Encoders");    //
@@ -163,10 +165,6 @@ public class CarloweAutonomous extends LinearOpMode {
          */
         // Lower the JewelSmacker
         robot.jewelSmackerDown();
-        robot.gripperStepIn();
-        robot.gripperStepIn();
-        robot.robotWait(1.5);
-        robot.lifterStepUp();
         //robot.lifterStepUp();
         robot.robotWait(1.0);
         delaytimer.reset();
@@ -194,7 +192,7 @@ public class CarloweAutonomous extends LinearOpMode {
         // Drive off the balance and hopefully be in same place every time
         robot.encoderDrive(HardwareCatBot.CREEP_SPEED, 20, 4, HardwareCatBot.DRIVE_MODE.driveOffBalance);
         // Drop the arm
-        robot.lifterStepDown();
+        //robot.lifterStepDown();
         // Turn to center
         robot.absoluteGyro(0.4, 0, 1.0, HardwareCatBot.TURN_MODE.PIVOT);
 
@@ -243,8 +241,6 @@ public class CarloweAutonomous extends LinearOpMode {
                 break;
             case CENTER:
                 telemetry.addData("Mission:", "CENTER");
-                robot.lifterStepUp();
-                robot.lifterStepUp();
                 robot.robotWait(1.0);
                 robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -40, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
                 robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 7, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
@@ -258,10 +254,9 @@ public class CarloweAutonomous extends LinearOpMode {
         }
         // In THE MIDDLE of a memory
         telemetry.addData("Mission:", "CENTER");
-        robot.gripperStepOut();
-        robot.gripperStepOut();
-        robot.gripperStepOut();
-        robot.robotWait(1.5);
+        robot.mecanumOut();
+        robot.robotWait(.5);
+        robot.mecanumStop();
         robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
         robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 0, 1, HardwareCatBot.TURN_MODE.PIVOT);
         robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 2, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
@@ -282,8 +277,6 @@ public class CarloweAutonomous extends LinearOpMode {
                 // everything you own in a box to THE LEFT
                 telemetry.addData("Mission:", "LEFT");
                 telemetry.update();
-                //robot.lifterStepUp();
-                //robot.robotWait(1);
                 robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 55, 3.0, HardwareCatBot.TURN_MODE.TANK);
                 //robot.lifterStepDown();
                 robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 8.0, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
@@ -310,9 +303,9 @@ public class CarloweAutonomous extends LinearOpMode {
                 break;
         }
         telemetry.update();
-        robot.gripperStepOut();
-        robot.gripperStepOut();
-        robot.robotWait(2.5);
+        robot.mecanumOut();
+        robot.robotWait(.5);
+        robot.mecanumStop();
         robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -6.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
         robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 90, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
 
@@ -363,10 +356,9 @@ public class CarloweAutonomous extends LinearOpMode {
         robot.lifterStepDown();
         robot.lifterStepDown();
         robot.robotWait(0.5);
-        robot.gripperStepOut();
-        robot.gripperStepOut();
-        robot.gripperStepOut();
-        robot.robotWait(2.5);
+        robot.mecanumOut();
+        robot.robotWait(.5);
+        robot.mecanumStop();
         robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
         robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -10.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
         robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -90, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
@@ -409,13 +401,10 @@ public class CarloweAutonomous extends LinearOpMode {
                 break;
         }
         robot.lifterStepDown();
-        robot.lifterStepDown();
-        robot.lifterStepDown();
         robot.robotWait(0.5);
-        robot.gripperStepOut();
-        robot.gripperStepOut();
-        robot.gripperStepOut();
-        robot.robotWait(1.5);
+        robot.mecanumOut();
+        robot.robotWait(.5);
+        robot.mecanumStop();
         robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 3.0, 20, HardwareCatBot.DRIVE_MODE.driveStraight);
         robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -8.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
         robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 10, 1, HardwareCatBot.TURN_MODE.PIVOT);
@@ -423,4 +412,5 @@ public class CarloweAutonomous extends LinearOpMode {
 
         robot.robotWait(5);
     }
+    //// TODO: 2/3/2018 go out and get another block(or two??) and put them in the cryptobox
 }
