@@ -82,7 +82,7 @@ public class HardwareCatBot
     static final double     HYPER_SPEED             = 0.8;
     static final double     CHILL_SPEED             = 0.3;
     static final double     CREEP_SPEED             = 0.2;
-    static final double     TURN_SPEED              = 0.5;
+    static final double     TURN_SPEED              = 0.6;
 
     static final double     JEWEL_UP                = 0.9;
     static final double     JEWEL_DOWN              = 0.35;
@@ -406,25 +406,6 @@ public class HardwareCatBot
                         keepDriving = false;
                     }
 
-                    // Old code
-                    /*if (firstPhase) {
-                        // Enter second phase after the robot tips to a certain extent...
-                        if (angles.thirdAngle > 94) {
-                            firstPhase = false;
-                        }
-                    } else {
-                        // Get values from gyro
-                        samplePoints.add(angles.thirdAngle);
-                        if (samplePoints.size() >= 6) {
-                            samplePoints.remove(0);
-                            Log.d("CatHat", String.format("Sample points: %.2f, %.2f, %.2f", samplePoints.get(0), samplePoints.get(4), (Math.abs(samplePoints.get(0) - samplePoints.get(4)))));
-
-                            // Stop when values get so close
-                            if (Math.abs(samplePoints.get(4) - samplePoints.get(4)) < 1) {
-                                keepDriving = false;
-                            }
-                        }
-                    }*/
                 }
 
                     /*
