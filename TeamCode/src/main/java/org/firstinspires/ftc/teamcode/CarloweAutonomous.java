@@ -56,8 +56,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 public class CarloweAutonomous extends LinearOpMode {
 
     /* Declare OpMode members. */
-    HardwareCatBot robot = new HardwareCatBot();   // Use a Pushbot's hardware
-    private ElapsedTime runtime = new ElapsedTime();
+    HardwareCatBot robot = new HardwareCatBot();
     private ElapsedTime delaytimer = new ElapsedTime();
     private double timeDelay;
     private boolean isRedMission = true;
@@ -231,38 +230,56 @@ public class CarloweAutonomous extends LinearOpMode {
             case LEFT:
                 // everything you own in a box to THE LEFT
                 telemetry.addData("Mission:", "LEFT");
-                robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 5.0, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
-                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -35, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
-                robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 9, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
-                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -45, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
-                robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 2.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+                robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 6, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -33, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 8, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
                 telemetry.update();
                 break;
             case CENTER:
+                // In the MIDDLE of a Memory
                 telemetry.addData("Mission:", "CENTER");
-                robot.robotWait(1.0);
                 robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -40, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
                 robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 7, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
                 break;
-            case RIGHT:
+            case RIGHT: //// TODO: 2/7/2018 Fix this... 
                 // mysterious as THE RIGHT SIDE of the moon
                 telemetry.addData("Mission:", "RIGHT");
                 robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -85, 5, HardwareCatBot.TURN_MODE.PIVOT);
                 robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 3, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
                 break;
         }
-        // In THE MIDDLE of a memory
-        telemetry.addData("Mission:", "CENTER");
+        telemetry.update();
+        // Back up a bit and spit out the glyph...
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -2, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.robotWait(0.5);
         robot.mecanumOut();
+
+        if (mission != HardwareCatBot.SOCKmission.LEFT) {
+            // Pound the glyph into the cryptobox!
+            robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+            robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -10.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+        } else {
+            // Leave the glyph so we don't push it out of the cryptobox!
+            robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+        }
+        robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 0, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+
+        /* ---Use this code ONLY IF we are not grabbing more glyphs--- */
+        switch (mission) {
+
+            case RIGHT:
+                // Drive forward a wee bit to park in the safe zone...
+                robot.encoderDrive(HardwareCatBot.CHILL_SPEED, 8, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
+                break;
+            case CENTER:
+                // Drive forward a wee bit to park in the safe zone...
+                robot.encoderDrive(HardwareCatBot.CHILL_SPEED, 5, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
+                break;
+        }
+        
+        // Stop the intake
         robot.robotWait(.5);
         robot.mecanumStop();
-        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
-        robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 0, 1, HardwareCatBot.TURN_MODE.PIVOT);
-        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 2, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
-
-        robot.robotWait(5);
-
-
     }
 
     /**
@@ -277,9 +294,10 @@ public class CarloweAutonomous extends LinearOpMode {
                 // everything you own in a box to THE LEFT
                 telemetry.addData("Mission:", "LEFT");
                 telemetry.update();
-                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 55, 3.0, HardwareCatBot.TURN_MODE.TANK);
-                //robot.lifterStepDown();
-                robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 8.0, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 50, 3, HardwareCatBot.TURN_MODE.PIVOT);
+                robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 13, 3, HardwareCatBot.DRIVE_MODE.driveStraight);
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 45, 3, HardwareCatBot.TURN_MODE.PIVOT);
+                robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 4, 3, HardwareCatBot.DRIVE_MODE.driveStraight);
                 break;
             case CENTER:
                 // In THE MIDDLE of a memory
@@ -287,7 +305,7 @@ public class CarloweAutonomous extends LinearOpMode {
                 telemetry.update();
                 robot.robotWait(1);
                 robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 5.0, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
-                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 35, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 30, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
                 robot.lifterStepDown();
                 robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 8.0, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
                 break;
@@ -303,15 +321,35 @@ public class CarloweAutonomous extends LinearOpMode {
                 break;
         }
         telemetry.update();
+        // Back up a bit and spit out the glyph...
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -2, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.robotWait(0.5);
         robot.mecanumOut();
         robot.robotWait(.5);
         robot.mecanumStop();
-        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -6.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+
+        if (mission != HardwareCatBot.SOCKmission.LEFT) {
+            // Pound the glyph into the cryptobox!
+            robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+            robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -10.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+        } else {
+            // Leave the glyph so we don't push it out of the cryptobox!
+            robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+        }
         robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 90, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
 
-        robot.robotWait(5.0);
+        /* ---Use this code ONLY IF we are not grabbing more glyphs--- */
+        switch (mission) {
 
-
+            case RIGHT:
+                // Drive forward a wee bit to park in the safe zone...
+                robot.encoderDrive(HardwareCatBot.CHILL_SPEED, 8, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
+                break;
+            case CENTER:
+                // Drive forward a wee bit to park in the safe zone...
+                robot.encoderDrive(HardwareCatBot.CHILL_SPEED, 5, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
+                break;
+        }
     }
 
     /**
@@ -348,7 +386,7 @@ public class CarloweAutonomous extends LinearOpMode {
                 telemetry.addData("Mission:", "RIGHT");
                 telemetry.update();
                 robot.robotWait(1);
-
+//// TODO: 2/7/2018 Add that little thing we did on redNah left 
                 // Turn and place glyph...
                 robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -37, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
                 robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 17.0, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
@@ -418,18 +456,36 @@ public class CarloweAutonomous extends LinearOpMode {
                 robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 3, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
                 break;
         }
-        robot.lifterStepDown();
+        telemetry.update();
+        // Back up a bit and spit out the glyph...
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -2, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
         robot.robotWait(0.5);
-        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -2.0, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
         robot.mecanumOut();
-        robot.robotWait(2.0);
+        robot.robotWait(.5);
         robot.mecanumStop();
-        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 4.0, 20, HardwareCatBot.DRIVE_MODE.driveStraight);
-        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -8.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
-        robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 10, 1, HardwareCatBot.TURN_MODE.PIVOT);
-        //robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 7, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
 
-        robot.robotWait(2);
+        if (mission != HardwareCatBot.SOCKmission.LEFT) {
+            // Pound the glyph into the cryptobox!
+            robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+            robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -10.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+        } else {
+            // Leave the glyph so we don't push it out of the cryptobox!
+            robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+        }
+        robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 0, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+
+        /* ---Use this code ONLY IF we are not grabbing more glyphs--- */
+        switch (mission) {
+
+            case LEFT:
+                // Drive forward a wee bit to park in the safe zone...
+                robot.encoderDrive(HardwareCatBot.CHILL_SPEED, 8, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
+                break;
+            case CENTER:
+                // Drive forward a wee bit to park in the safe zone...
+                robot.encoderDrive(HardwareCatBot.CHILL_SPEED, 5, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
+                break;
+        }
 
         /*robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 0,5, HardwareCatBot.TURN_MODE.PIVOT);
         robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 4, 2, HardwareCatBot.DRIVE_MODE.driveStraight);

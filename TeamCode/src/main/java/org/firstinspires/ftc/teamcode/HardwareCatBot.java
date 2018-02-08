@@ -401,8 +401,9 @@ public class HardwareCatBot
                     // Just drive straight...
                     drive(leftSpeed, rightSpeed);
 
+                    //// TODO: 2/7/2018 CHANGED THIS FROM 88 to 90 because the imu changed today...
                     // Just cut the crap... STOP AT AN ABSOLUTE!!!
-                    if (angles.thirdAngle < 88) {
+                    if (angles.thirdAngle < 90) {
                         keepDriving = false;
                     }
 
