@@ -5,6 +5,8 @@
  we pick which stone we are on with gamepad1 and knock the jewel off and
  place a glyph or two into the cryptobox.
 
+ CarloweAuto is written for use with the mecanum intake.
+
  This file is a modified version from the FTC SDK.
 
  Modifications by FTC Team #10273 Cat in the Hat Comes Back
@@ -103,23 +105,24 @@ public class CarloweAutonomous extends LinearOpMode {
                 return;
             }
             // increase if up is pressed and it's been 0.2 seconds since last push
-            if (gamepad1.dpad_up && (delaytimer.seconds() > 2.5)) {
+            if (gamepad1.dpad_up && delaytimer.seconds() > 2.5) {
                 timeDelay += 1;
                 delaytimer.reset();
             }
             // decrease if down is pressed and it's been 0.2 seconds since last push
-            if (gamepad1.dpad_down && (delaytimer.seconds() > 2.5)) {
+            if (gamepad1.dpad_down && delaytimer.seconds() > 2.5) {
                 if (timeDelay > 0) {
                     timeDelay -= 1;
                 }
                 delaytimer.reset();
             }
-            if (((gamepad1.dpad_left) && delaytimer.seconds() > 2.5)) {
+            if (gamepad1.dpad_left && delaytimer.seconds() > 2.5) {
                 if (isRedMission) {
                     isRedMission = false;
                 } else {
                     isRedMission = true;
                 }
+                delaytimer.reset();
             }
 
             if (gamepad1.dpad_right && delaytimer.seconds() > 2.5) {
@@ -128,6 +131,15 @@ public class CarloweAutonomous extends LinearOpMode {
                 } else {
                     stonePos = HardwareCatBot.StonePos.Audience;
                 }
+                delaytimer.reset();
+            }
+
+            if (isRedMission) {
+                robot.blinky(HardwareCatBot.LED_LightUpType.RED);
+                robot.allianceColor = HardwareCatBot.LED_LightUpType.RED;
+            } else {
+                robot.blinky(HardwareCatBot.LED_LightUpType.BLUE);
+                robot.allianceColor = HardwareCatBot.LED_LightUpType.BLUE;
             }
 
             telemetry.addData("Delay Timer: ", timeDelay);
@@ -232,7 +244,7 @@ public class CarloweAutonomous extends LinearOpMode {
                 telemetry.addData("Mission:", "LEFT");
                 robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 6, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
                 robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -33, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
-                robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 8, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+                robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 9, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
                 telemetry.update();
                 break;
             case CENTER:
@@ -241,10 +253,10 @@ public class CarloweAutonomous extends LinearOpMode {
                 robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -40, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
                 robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 7, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
                 break;
-            case RIGHT: //// TODO: 2/7/2018 Fix this... 
+            case RIGHT:
                 // mysterious as THE RIGHT SIDE of the moon
                 telemetry.addData("Mission:", "RIGHT");
-                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -85, 5, HardwareCatBot.TURN_MODE.PIVOT);
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -67, 5, HardwareCatBot.TURN_MODE.PIVOT);
                 robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 3, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
                 break;
         }
@@ -253,6 +265,7 @@ public class CarloweAutonomous extends LinearOpMode {
         robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -2, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
         robot.robotWait(0.5);
         robot.mecanumOut();
+        robot.robotWait(0.5);
 
         if (mission != HardwareCatBot.SOCKmission.LEFT) {
             // Pound the glyph into the cryptobox!
@@ -262,7 +275,7 @@ public class CarloweAutonomous extends LinearOpMode {
             // Leave the glyph so we don't push it out of the cryptobox!
             robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
         }
-        robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 0, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+        robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -2, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
 
         /* ---Use this code ONLY IF we are not grabbing more glyphs--- */
         switch (mission) {
@@ -276,9 +289,7 @@ public class CarloweAutonomous extends LinearOpMode {
                 robot.encoderDrive(HardwareCatBot.CHILL_SPEED, 5, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
                 break;
         }
-        
-        // Stop the intake
-        robot.robotWait(.5);
+        // Stop the intake...
         robot.mecanumStop();
     }
 
@@ -326,7 +337,6 @@ public class CarloweAutonomous extends LinearOpMode {
         robot.robotWait(0.5);
         robot.mecanumOut();
         robot.robotWait(.5);
-        robot.mecanumStop();
 
         if (mission != HardwareCatBot.SOCKmission.LEFT) {
             // Pound the glyph into the cryptobox!
@@ -350,6 +360,8 @@ public class CarloweAutonomous extends LinearOpMode {
                 robot.encoderDrive(HardwareCatBot.CHILL_SPEED, 5, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
                 break;
         }
+        // Stop the intake...
+        robot.mecanumStop();
     }
 
     /**
@@ -386,20 +398,22 @@ public class CarloweAutonomous extends LinearOpMode {
                 telemetry.addData("Mission:", "RIGHT");
                 telemetry.update();
                 robot.robotWait(1);
-//// TODO: 2/7/2018 Add that little thing we did on redNah left 
+
                 // Turn and place glyph...
-                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -37, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
-                robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 17.0, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -50, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 12.0, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -45, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 7.0, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
                 break;
-        }
-        telemetry.update();
+        }  telemetry.update();
+        // Back up a bit and spit out the glyph...
         robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -2, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
         robot.robotWait(0.5);
         robot.mecanumOut();
         robot.robotWait(.5);
-        robot.mecanumStop();
 
-        if (mission != HardwareCatBot.SOCKmission.RIGHT) {
+
+        if (mission != HardwareCatBot.SOCKmission.LEFT) {
             // Pound the glyph into the cryptobox!
             robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
             robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -10.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
@@ -421,6 +435,8 @@ public class CarloweAutonomous extends LinearOpMode {
                 robot.encoderDrive(HardwareCatBot.CHILL_SPEED, 5, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
                 break;
         }
+        // Stop the intake...
+        robot.mecanumStop();
     }
 
     /**
@@ -462,7 +478,6 @@ public class CarloweAutonomous extends LinearOpMode {
         robot.robotWait(0.5);
         robot.mecanumOut();
         robot.robotWait(.5);
-        robot.mecanumStop();
 
         if (mission != HardwareCatBot.SOCKmission.LEFT) {
             // Pound the glyph into the cryptobox!
@@ -486,7 +501,10 @@ public class CarloweAutonomous extends LinearOpMode {
                 robot.encoderDrive(HardwareCatBot.CHILL_SPEED, 5, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
                 break;
         }
+        // Stop the intake...
+        robot.mecanumStop();
 
+        //// TODO: 2/3/2018 go out and get another block(or two??) and put them in the cryptobox
         /*robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 0,5, HardwareCatBot.TURN_MODE.PIVOT);
         robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 4, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
         robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -90, 15, HardwareCatBot.TURN_MODE.PIVOT);
@@ -497,5 +515,4 @@ public class CarloweAutonomous extends LinearOpMode {
         robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -87, 2, HardwareCatBot.TURN_MODE.TANK);
         robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -93, 2, HardwareCatBot.TURN_MODE.TANK);*/
     }
-    //// TODO: 2/3/2018 go out and get another block(or two??) and put them in the cryptobox
 }

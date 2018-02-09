@@ -87,8 +87,8 @@ public class HardwareCatBot
     static final double     JEWEL_UP                = 0.9;
     static final double     JEWEL_DOWN              = 0.35;
 
-    static final double     LEDpower                = 0.7;
-
+    static final double     LEDpower                = 1.0;
+    static LED_LightUpType allianceColor            = LED_LightUpType.RED;
 
     enum DRIVE_MODE {
         driveStraight,
@@ -626,7 +626,7 @@ public class HardwareCatBot
         // After the blinkLength turn the LEDs off...
 
         // Code for blinky
-        if (endgameOfAuto.seconds() > 10 && numTimes < 4) {
+        if (endgameOfAuto.seconds() > 10 && numTimes < 8) {
             if (blinkyTimer.milliseconds() > 500) { // if time greater than .5 sec...
                 // turn on lights and reset timer...
                 blinky(LED_LightUpType.NONE);

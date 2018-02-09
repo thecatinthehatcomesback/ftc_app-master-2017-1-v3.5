@@ -2,6 +2,7 @@
     ShulesTeleOp.java
 
     A Linear opmode class to be our main teleop method
+    This version is for the mecanum intake.
 
     This file is a modified version from the FTC SDK.
 
@@ -68,7 +69,6 @@ public class ShulesTeleOp extends LinearOpMode {
     private ElapsedTime driveModeSwitch     = new ElapsedTime();
     private HardwareCatBot.TeleOpDriveMode driveMode = HardwareCatBot.TeleOpDriveMode.TankDrive;
 
-
     /* Declare OpMode members. */
     HardwareCatBot robot; // use the class created for the hardware
 
@@ -90,6 +90,7 @@ public class ShulesTeleOp extends LinearOpMode {
         // Set jewel smacker to up pos
         robot.jewelSmackerUp();  // Init After start b/c it was called a "major movement"... ugh!
         robot.blinkyTimer.reset();
+        robot.blinky(robot.allianceColor);
         robot.endgameOfAuto.reset();
 
         // go
@@ -106,6 +107,8 @@ public class ShulesTeleOp extends LinearOpMode {
             }
 
             robot.periodicTask();
+
+            // J
             if (robot.numTimes == 4) {
                 telemetry.addData("Status: ", "numTimes = 4");
             }
@@ -203,7 +206,6 @@ public class ShulesTeleOp extends LinearOpMode {
             if (gamepad2.dpad_up) {
                 robot.jewelSmackerUp();
             }
-
             /**
              * ---   _________   ---
              * ---   TELEMETRY   ---

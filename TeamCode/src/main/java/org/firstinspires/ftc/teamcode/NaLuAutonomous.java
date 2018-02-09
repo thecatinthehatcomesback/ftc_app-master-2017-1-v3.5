@@ -1,9 +1,11 @@
 /**
- shooterAuto.java
+ NaLuAutonomous.java
 
- A Linear opmode class to be an autonomous method for both Blue w Red to either just shoot
- the balls into the center vortex, shoot the balls and then park under the center vortex, or
- shoot the balls and park on the corner vortex.
+ A Linear OpMode class to be an autonomous method for both Blue & Red where
+ we pick which stone we are on with gamepad1 and knock the jewel off and
+ place a glyph or two into the cryptobox.
+
+ NaLu is written for use with the gripper - used in our first two tournaments.
 
  This file is a modified version from the FTC SDK.
 

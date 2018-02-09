@@ -1,9 +1,9 @@
 /**
- shooterAuto.java
+ DriveTester.java
 
- A Linear opmode class to be an autonomous method for both Blue and Red to either just shoot
- the balls into the center vortex, shoot the balls and then park under the center vortex, or
- shoot the balls and park on the corner vortex.
+ A Linear opmode class to be an autonomous method for testing if drive a
+ distance works accurately.  This tests that the encoders work and the
+ calibration for number of ticks per inch is accurate.
 
  This file is a modified version from the FTC SDK.
 

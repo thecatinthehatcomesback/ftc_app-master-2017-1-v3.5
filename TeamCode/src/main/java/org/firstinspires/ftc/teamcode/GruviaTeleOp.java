@@ -1,7 +1,9 @@
 /*
-    FrancisTeleOp.java
+    GruviaTeleOp.java
 
     A Linear opmode class to be our main teleop method
+    This was used with the gripper for the 2 qualifying tournaments
+     It has now been replaced when we went to the mecanum intake.
 
     This file is a modified version from the FTC SDK.
 
