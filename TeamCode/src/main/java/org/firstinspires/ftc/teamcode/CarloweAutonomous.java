@@ -63,7 +63,6 @@ public class CarloweAutonomous extends LinearOpMode {
     private double timeDelay;
     private boolean isRedMission = true;
     private HardwareCatBot.SOCKmission mission = HardwareCatBot.SOCKmission.CENTER;
-
     private HardwareCatBot.StonePos stonePos = HardwareCatBot.StonePos.Nah;
 
 
