@@ -74,7 +74,7 @@ public class OpenCVTest extends LinearOpMode {
         cryptoboxDetector = new CryptoboxDetector();
         cryptoboxDetector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
 
-        cryptoboxDetector.rotateMat = false;
+        cryptoboxDetector.rotateMat = true;
 
         cryptoboxDetector.enable();
 
@@ -82,11 +82,6 @@ public class OpenCVTest extends LinearOpMode {
         telemetry.addData("Status", "Resetting Encoders");    //
         telemetry.update();
 
-        // Send telemetry message to indicate successful Encoder reset
-        telemetry.addData("Path0", "Starting at %7d :%7d",
-                robot.leftMotor.getCurrentPosition(),
-                robot.rightMotor.getCurrentPosition());
-        telemetry.update();
 
         // After init is pushed but before Start we can change the delay using dpad up/down
         delaytimer.reset();
