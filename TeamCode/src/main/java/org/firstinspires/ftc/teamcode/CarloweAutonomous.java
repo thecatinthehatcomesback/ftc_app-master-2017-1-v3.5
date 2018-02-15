@@ -376,7 +376,6 @@ public class CarloweAutonomous extends LinearOpMode {
                 telemetry.addData("Mission:", "LEFT");
                 telemetry.update();
                 robot.robotWait(1);
-
                 // Turn and place glyph...
                 robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -5, 2.0, HardwareCatBot.TURN_MODE.PIVOT);
                 //robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 5.0, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
@@ -387,7 +386,6 @@ public class CarloweAutonomous extends LinearOpMode {
                 telemetry.addData("Mission:", "CENTER");
                 telemetry.update();
                 robot.robotWait(1);
-
                 // Turn and place glyph...
                 robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -23, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
                 robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 10.0, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
@@ -487,6 +485,7 @@ public class CarloweAutonomous extends LinearOpMode {
             robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
         }
         robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 0, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 3, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
 
         /* ---Use this code ONLY IF we are not grabbing more glyphs--- */
         switch (mission) {

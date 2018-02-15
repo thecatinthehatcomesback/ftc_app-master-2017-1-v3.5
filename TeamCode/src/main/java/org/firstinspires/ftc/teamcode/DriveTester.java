@@ -52,7 +52,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 
 @Autonomous(name="Driver Test", group="CatAuto")
-//@Disabled
 public class DriveTester extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -115,7 +114,10 @@ public class DriveTester extends LinearOpMode {
         * DO STUFF FOR MODE!!!!!!!!!!!
         *
         \*/
+        robot.mecanumIn();
         robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, distanceToDrive, 15, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -distanceToDrive, 15, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.mecanumStop();
 
         telemetry.addData("Driving Distance:", distanceToDrive);
         telemetry.update();
