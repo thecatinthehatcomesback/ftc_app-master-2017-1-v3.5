@@ -201,7 +201,7 @@ public class HardwareCatBot
         LEDblue        = hwMap.dcMotor.get("led_blue");
         LEDred         = hwMap.dcMotor.get("led_red");
         jewelArm = hwMap.servo.get("quality_jewel_smackage");
-        jewelFlipper = hwMap.servo.get("quality_tail_idealness");
+        jewelFlipper = hwMap.servo.get("quality_arm_idealness");
         jewelColors    = hwMap.colorSensor.get("seeing_red_makes_u_blue");
         TopGlyphCensor = hwMap.colorSensor.get("top_glyph_censor");
         TopGlyphDist   = hwMap.get(DistanceSensor.class, "top_glyph_censor");
@@ -662,8 +662,8 @@ public class HardwareCatBot
         intakeMotorRight.setPower(-0.3);
     }
     public void mecanumIn() {
-        intakeMotorLeft.setPower(0.3);
-        intakeMotorRight.setPower(0.3);
+        intakeMotorLeft.setPower(1.0);
+        intakeMotorRight.setPower(1.0);
     }
     public void mecanumStop() {
         intakeMotorLeft.setPower(0);
