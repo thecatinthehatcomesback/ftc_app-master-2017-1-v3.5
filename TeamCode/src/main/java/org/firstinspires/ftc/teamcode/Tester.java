@@ -21,19 +21,19 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 
-@Autonomous(name="All Tests", group="CatAuto")
+@Autonomous(name="Tester", group="CatAuto")
 public class Tester extends LinearOpMode {
 
     /* Declare OpMode members. */
-    HardwareCatBot robot = new HardwareCatBot();   // Use a Pushbot's hardware
+    HardwareCatBot robot = new HardwareCatBot();
     private ElapsedTime runtime = new ElapsedTime();
     private ElapsedTime delaytimer = new ElapsedTime();
-    private double timeDelay;
 
 
     @Override
@@ -45,20 +45,11 @@ public class Tester extends LinearOpMode {
          */
         robot.init(hardwareMap, this, false, false);
 
+
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Resetting Encoders");    //
         telemetry.update();
 
-        robot.resetEncoders();
-        idle();
-
-        robot.runToPosition();
-
-        // Send telemetry message to indicate successful Encoder reset
-        telemetry.addData("Path0", "Starting at %7d :%7d",
-                robot.leftMotor.getCurrentPosition(),
-                robot.rightMotor.getCurrentPosition());
-        telemetry.update();
 
         // After init is pushed but before Start we can change the delay using dpad up/down
         delaytimer.reset();
@@ -80,64 +71,26 @@ public class Tester extends LinearOpMode {
         *
         \*/
         double jewelPos;
-        int gripperPos;
         runtime.reset();
         robot.jewelSmackerUp();
         while (opModeIsActive()){
-            jewelPos = robot.jewelSmacker.getPosition();
-            if (gamepad1.dpad_up && (runtime.seconds() > 0.25)) {
-                robot.jewelSmacker.setPosition(jewelPos + 0.05);
-                telemetry.addData("Adding", "something");
-                runtime.reset();
-            } else if (gamepad1.dpad_down && (runtime.seconds() > 0.25)) {
-                robot.jewelSmacker.setPosition(jewelPos - 0.05);
-                telemetry.addData("Subtracting", "something");
-                runtime.reset();
-            }
-            if (gamepad1.x && (runtime.seconds() > 0.25)){
-                robot.encoderDrive(HardwareCatBot.CHILL_SPEED, 10, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
-                runtime.reset();
-            }
-            if (gamepad1.y && (runtime.seconds() > 0.25)){
-                robot.encoderDrive(HardwareCatBot.CHILL_SPEED, 20, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
-                runtime.reset();
-            }
-            if (gamepad2.dpad_left) {
-                telemetry.addData("Turn type:", "TANK 90");
-                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 90, 3, HardwareCatBot.TURN_MODE.TANK);
-            } else if (gamepad2.dpad_right) {
-                telemetry.addData("Turn type:", "TANK -90");
-                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -90, 3, HardwareCatBot.TURN_MODE.TANK);
-            } else if (gamepad2.dpad_up) {
-                telemetry.addData("Turn type:", "PIVOT -90");
-                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -90, 3, HardwareCatBot.TURN_MODE.PIVOT);
-            } else if (gamepad2.dpad_down) {
-                telemetry.addData("Turn type:", "PIVOT 90");
-                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 90, 3, HardwareCatBot.TURN_MODE.PIVOT);
-            }
-            gripperPos = robot.gripperMotor.getTargetPosition();
-            if (gamepad1.dpad_left && (runtime.seconds() > 0.25)) {
-                robot.gripperMotor.setTargetPosition(gripperPos + 10);
-                runtime.reset();
-                robot.gripperMotor.setPower(.1);
-            } else if (gamepad1.dpad_right && (runtime.seconds() > 0.25)) {
-                robot.gripperMotor.setTargetPosition(gripperPos - 10);
-                runtime.reset();
-            robot.gripperMotor.setPower(.1);
-            }
+            jewelPos = robot.jewelArm.getPosition();
+
             Orientation angles   = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
 
             telemetry.addData("xyz:", "%.1f, %.1f, %.1f", angles.firstAngle, angles.secondAngle, angles.thirdAngle);
-            telemetry.addData("lifter pos:", robot.lifterMotor.getCurrentPosition());
-            telemetry.addData("gripper Position", gripperPos);
-            telemetry.addData("alpha:", robot.jewelColors.alpha());
-            telemetry.addData("red:", robot.jewelColors.red());
-            telemetry.addData("blue:", robot.jewelColors.blue());
-            telemetry.addData("green:", robot.jewelColors.green());
+            telemetry.addData("alpha:", robot.TopGlyphCensor.alpha());
+            telemetry.addData("red:", robot.TopGlyphCensor.red());
+            telemetry.addData("blue:", robot.TopGlyphCensor.blue());
+            telemetry.addData("green:", robot.TopGlyphCensor.green());
+            telemetry.addData("dist:", robot.TopGlyphDist.getDistance(DistanceUnit.CM));
+            telemetry.addData("GlyphFinder:", robot.findGlyphColor(robot.TopGlyphCensor, robot.TopGlyphDist));
             telemetry.addData("Jewel Position:", jewelPos);
             telemetry.addData("Current time:", runtime.seconds());
+
             telemetry.update();
+
         }
 
     }

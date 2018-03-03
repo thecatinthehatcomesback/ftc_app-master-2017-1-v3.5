@@ -15,6 +15,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -25,6 +26,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuMarkInstanceId;
@@ -63,14 +65,17 @@ public class HardwareCatBot
 
     //ModernRoboticsI2cRangeSensor andPeggy;
 
-    public Servo   jewelSmacker        = null;
-    ColorSensor    jewelColors         = null;
+    public Servo    jewelArm            = null;
+    public Servo    jewelFlipper        = null;
+    ColorSensor     jewelColors         = null;
+    ColorSensor     TopGlyphCensor      = null;
+    DistanceSensor  TopGlyphDist        = null;
 
     // Vuforia
-    VuforiaLocalizer vuforia;
-    VuforiaTrackables relicTrackables;
+    VuforiaLocalizer    vuforia;
+    VuforiaTrackables   relicTrackables;
     RelicRecoveryVuMark vuMark;
-    VuforiaTrackable relicTemplate;
+    VuforiaTrackable    relicTemplate;
 
 
     static final double     COUNTS_PER_MOTOR_REV    = 1120 ;    // eg: ANDYMARK Motor Encoder     (Check actual count for next year...)
@@ -84,11 +89,17 @@ public class HardwareCatBot
     static final double     CREEP_SPEED             = 0.2;
     static final double     TURN_SPEED              = 0.6;
 
+    static final double     ARM_UP                  = 0.0;
+    static final double     ARM_DOWN                = 0.5;
+    static final double     JEWEL_LEFT              = 1.0;
+    static final double     JEWEL_CENTER            = 0.5;
+    static final double     JEWEL_RIGHT             = 0.0;
+
     static final double     JEWEL_UP                = 0.9;
     static final double     JEWEL_DOWN              = 0.35;
 
     static final double     LEDpower                = 1.0;
-    static LED_LightUpType allianceColor            = LED_LightUpType.RED;
+    static LED_LightUpType  allianceColor           = LED_LightUpType.RED;
 
     enum DRIVE_MODE {
         driveStraight,
@@ -185,16 +196,19 @@ public class HardwareCatBot
             intakeMotorRight.setPower(0);
             intakeMotorLeft.setPower(0);
             lifterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);    // Reset the liftMotor when we init
-            lifterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);           // Set lifterMotor to RUN_TO_POSITION
+            lifterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);      // Set lifterMotor to RUN_TO_POSITION
         }
         LEDblue        = hwMap.dcMotor.get("led_blue");
         LEDred         = hwMap.dcMotor.get("led_red");
-        jewelSmacker   = hwMap.servo.get("quality_jewel_smackage");
+        jewelArm = hwMap.servo.get("quality_jewel_smackage");
+        jewelFlipper = hwMap.servo.get("quality_tail_idealness");
         jewelColors    = hwMap.colorSensor.get("seeing_red_makes_u_blue");
+        TopGlyphCensor = hwMap.colorSensor.get("top_glyph_censor");
+        TopGlyphDist   = hwMap.get(DistanceSensor.class, "top_glyph_censor");
 
-        leftMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        rightMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-        lifterMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+        leftMotor.setDirection(DcMotor.Direction.REVERSE);              // Set to REVERSE if using AndyMark motors
+        rightMotor.setDirection(DcMotor.Direction.FORWARD);             // Set to FORWARD if using AndyMark motors
+        lifterMotor.setDirection(DcMotor.Direction.REVERSE);            // Set to FORWARD if using AndyMark motors
 
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);         // Set leftMotor to RUN_WITHOUT_ENCODER
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);        // Set rightMotor to RUN_WITHOUT_ENCODER
@@ -205,9 +219,6 @@ public class HardwareCatBot
         lifterMotor.setPower(0);
         LEDblue.setPower(0);
         LEDred.setPower(0);
-
-        // Set jewel smacker up
-        jewelSmackerUp();
 
         // Set all motors to run without encoders.
         runNoEncoders();
@@ -719,18 +730,52 @@ public class HardwareCatBot
             return false;
         }
     }
+
+    public int findGlyphColor(ColorSensor colorSensor,DistanceSensor distanceSensor) {
+        int glyphColor = 0;
+        double  avgColor = 0;
+
+        if (distanceSensor.getDistance(DistanceUnit.CM) < 6) {
+            avgColor = (colorSensor.red() + colorSensor.blue() + colorSensor.green()) / 3;
+
+            if (avgColor < 80) {
+                glyphColor = 1;
+            } else if (avgColor > 100){
+                glyphColor = 2;
+            }
+        }
+
+        return glyphColor;
+    }
     /**
      * ---   _________________________   ---
      * ---   JewelQualitySmakage sutff   ---
      * ---    \/ \/ \/ \/ \/ \/ \/ \/    ---
      */
     public void jewelSmackerDown() {
+        //// TODO: 3/3/2018 Old Code
         //  Set jewelSmackage to down
-        jewelSmacker.setPosition(JEWEL_DOWN);
+        //jewelArm.setPosition(JEWEL_DOWN);
+
+        /**
+         * This Method will set the jewelFlipper and jewelArm out...
+         * This Method also sets up the color sensor to sense the jewel...
+         * This is done before smacking the jewel...
+         */
+        jewelFlipper.setPosition(JEWEL_CENTER);
+        jewelArm.setPosition(ARM_DOWN);
     }
     public void jewelSmackerUp()   {
+        //// TODO: 3/3/2018 Old Code
         //  Set jewelSmackage to up
-        jewelSmacker.setPosition(JEWEL_UP);
+        //jewelArm.setPosition(JEWEL_UP);
+
+        /**
+         * This Method will set the jewelFlipper and jewelArm folded in...
+         * This Method will keep the servos folded in during TeleOp...
+         * This is done after smacking the jewel and during TeleOp...
+         */
+        jewelArm.setPosition(ARM_UP);
     }
     /**
      * ---   ____________   ---

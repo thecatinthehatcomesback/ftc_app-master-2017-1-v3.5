@@ -43,11 +43,16 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Log;
+
 import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.detectors.CryptoboxDetector;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 
 @Autonomous(name="OpenCV Test", group="CatAuto")
@@ -66,7 +71,7 @@ public class OpenCVTest extends LinearOpMode {
          * Initialize the drive system variables.
          * The init() method of the hardware class does all the work here
          */
-        //robot.init(hardwareMap, this, false, false);
+        robot.init(hardwareMap, this, false, false);
 
         /*
          *  Init the OpenCV...
@@ -74,7 +79,7 @@ public class OpenCVTest extends LinearOpMode {
         cryptoboxDetector = new CryptoboxDetector();
         cryptoboxDetector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
 
-        cryptoboxDetector.rotateMat = true;
+        cryptoboxDetector.rotateMat = false;
 
         cryptoboxDetector.enable();
 
@@ -94,7 +99,7 @@ public class OpenCVTest extends LinearOpMode {
             delaytimer.reset();
         }
         //initilize the sensor :)
-        //robot.imu.startAccelerationIntegration(new Position(), new Velocity(), 250);
+        robot.imu.startAccelerationIntegration(new Position(), new Velocity(), 250);
 
         /*\
         * Runs after hit start
@@ -111,6 +116,19 @@ public class OpenCVTest extends LinearOpMode {
             telemetry.addData("Column Right ", cryptoboxDetector.getCryptoBoxRightPosition());
 
             telemetry.update();
+            //center
+            double adjustment;
+            if (cryptoboxDetector.isColumnDetected()){
+                adjustment = (cryptoboxDetector.getCryptoBoxCenterPosition() - 400.0)/800.0;
+            } else {
+                adjustment = 0;
+            }
+            robot.drive(0.2 + adjustment, 0.2 - adjustment);
+            Log.d("catbot", String.format("speed %.2f %.2f isdetected %s %s center %d",
+                    0.2 + adjustment, 0.2 - adjustment,
+                    cryptoboxDetector.isCryptoBoxDetected() ? "true": "false",
+                    cryptoboxDetector.isColumnDetected() ? "true": "false",
+                    cryptoboxDetector.getCryptoBoxCenterPosition()) );
         }
     }
 }

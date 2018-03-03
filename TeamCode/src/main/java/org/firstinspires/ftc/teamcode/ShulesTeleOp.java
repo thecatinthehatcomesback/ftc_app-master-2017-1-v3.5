@@ -88,7 +88,7 @@ public class ShulesTeleOp extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         // Set jewel smacker to up pos
-        robot.jewelSmackerUp();  // Init After start b/c it was called a "major movement"... ugh!
+        robot.jewelSmackerUp();              // Init After start b/c it was called a "major movement"... ugh!
         robot.blinkyTimer.reset();
         robot.blinky(robot.allianceColor);
         robot.endgameOfAuto.reset();
@@ -107,11 +107,6 @@ public class ShulesTeleOp extends LinearOpMode {
             }
 
             robot.periodicTask();
-
-            // J
-            if (robot.numTimes == 4) {
-                telemetry.addData("Status: ", "numTimes = 4");
-            }
 
             /**
              * ---   __________________   ---
