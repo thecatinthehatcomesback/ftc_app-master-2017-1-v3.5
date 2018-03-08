@@ -177,13 +177,13 @@ public class potatoAutonomous extends LinearOpMode {
         // Use JewelColors to sense the color of the jewel and turn appropriately
         if ((robot.isRed() && isRedMission) || (robot.isRed() && !isRedMission)) { // Drive forward
             //  Knock it by moving the jewelFlipper...
-            robot.jewelFlipper.setPosition(robot.JEWEL_RIGHT);
+            robot.jewelFlipper.setPosition(robot.FLIPPER_RIGHT);
             robot.robotWait(0.5);
             robot.jewelSmackerUp();
 
         } else if ((!robot.isRed() && isRedMission) || (!robot.isRed() && !isRedMission)) { // Drive backward
             //  Knock it by moving the jewelFlipper...
-            robot.jewelFlipper.setPosition(robot.JEWEL_LEFT);
+            robot.jewelFlipper.setPosition(robot.FLIPPER_LEFT);
             robot.robotWait(0.5);
             robot.jewelSmackerUp();
         }

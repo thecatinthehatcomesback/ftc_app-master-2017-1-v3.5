@@ -201,6 +201,17 @@ public class ShulesTeleOp extends LinearOpMode {
             if (gamepad2.dpad_up) {
                 robot.jewelSmackerUp();
             }
+            if (gamepad2.dpad_left) {
+                robot.jewelFlipperLeft();
+            }
+            if (gamepad2.dpad_right)  {
+                robot.jewelFlipperRight();
+            }
+            if (gamepad2.x) {
+                robot.jewelFlipperCenter();
+            }
+
+
             /**
              * ---   _________   ---
              * ---   TELEMETRY   ---

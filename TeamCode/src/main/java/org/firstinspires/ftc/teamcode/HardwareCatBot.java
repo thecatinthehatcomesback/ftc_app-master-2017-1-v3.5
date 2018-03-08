@@ -53,23 +53,24 @@ import java.util.List;
 public class HardwareCatBot
 {
     /* Public OpMode members. */
-    public DcMotor  leftMotor   = null;
-    public DcMotor  rightMotor  = null;
-    public DcMotor  lifterMotor = null;
-    public DcMotor  gripperMotor = null;
-    public DcMotor  intakeMotorRight = null;
-    public DcMotor  intakeMotorLeft = null;
-    public DcMotor  LEDblue = null;
-    public DcMotor  LEDred = null;
+    public DcMotor  leftMotor           = null;
+    public DcMotor  rightMotor          = null;
+    public DcMotor  lifterMotor         = null;
+    public DcMotor  gripperMotor        = null;
+    public DcMotor  intakeMotorRight    = null;
+    public DcMotor  intakeMotorLeft     = null;
+    public DcMotor  LEDblue             = null;
+    public DcMotor  LEDred              = null;
 
 
     //ModernRoboticsI2cRangeSensor andPeggy;
 
     public Servo    jewelArm            = null;
     public Servo    jewelFlipper        = null;
+    public Servo    intakeRotateyThing  = null;
     ColorSensor     jewelColors         = null;
-    ColorSensor     TopGlyphCensor      = null;
-    DistanceSensor  TopGlyphDist        = null;
+    //ColorSensor     TopGlyphCensor      = null;
+    //DistanceSensor  TopGlyphDist        = null;
 
     // Vuforia
     VuforiaLocalizer    vuforia;
@@ -89,11 +90,13 @@ public class HardwareCatBot
     static final double     CREEP_SPEED             = 0.2;
     static final double     TURN_SPEED              = 0.6;
 
-    static final double     ARM_UP                  = 0.0;
-    static final double     ARM_DOWN                = 0.5;
-    static final double     JEWEL_LEFT              = 1.0;
-    static final double     JEWEL_CENTER            = 0.5;
-    static final double     JEWEL_RIGHT             = 0.0;
+    static final double     ARM_UP                  = 0.56;
+    static final double     ARM_DOWN                = 0.3;
+    static final double     FLIPPER_LEFT            = 1.0;
+    static final double     FLIPPER_CENTER          = 0.45;
+    static final double     FLIPPER_RIGHT           = 0.0;
+
+    static final double     INTAKE_INIT_POS         = 0.5;
 
     static final double     JEWEL_UP                = 0.9;
     static final double     JEWEL_DOWN              = 0.35;
@@ -191,8 +194,8 @@ public class HardwareCatBot
         } else {
             intakeMotorRight = hwMap.dcMotor.get("right_intake_motor");
             intakeMotorLeft  = hwMap.dcMotor.get("left_intake_motor");
-            intakeMotorRight.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD
-            intakeMotorLeft.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD
+            intakeMotorRight.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD
+            intakeMotorLeft.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD
             intakeMotorRight.setPower(0);
             intakeMotorLeft.setPower(0);
             lifterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);    // Reset the liftMotor when we init
@@ -200,15 +203,17 @@ public class HardwareCatBot
         }
         LEDblue        = hwMap.dcMotor.get("led_blue");
         LEDred         = hwMap.dcMotor.get("led_red");
-        jewelArm = hwMap.servo.get("quality_jewel_smackage");
-        jewelFlipper = hwMap.servo.get("quality_arm_idealness");
+        jewelArm       = hwMap.servo.get("quality_jewel_smackage");
+        jewelFlipper   = hwMap.servo.get("quality_arm_idealness");
+        intakeRotateyThing   = hwMap.servo.get("intake_rotatey_thing");
         jewelColors    = hwMap.colorSensor.get("seeing_red_makes_u_blue");
-        TopGlyphCensor = hwMap.colorSensor.get("top_glyph_censor");
-        TopGlyphDist   = hwMap.get(DistanceSensor.class, "top_glyph_censor");
+        //TopGlyphCensor = hwMap.colorSensor.get("top_glyph_censor");
+        //TopGlyphDist   = hwMap.get(DistanceSensor.class, "top_glyph_censor");
 
         leftMotor.setDirection(DcMotor.Direction.REVERSE);              // Set to REVERSE if using AndyMark motors
         rightMotor.setDirection(DcMotor.Direction.FORWARD);             // Set to FORWARD if using AndyMark motors
         lifterMotor.setDirection(DcMotor.Direction.REVERSE);            // Set to FORWARD if using AndyMark motors
+
 
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);         // Set leftMotor to RUN_WITHOUT_ENCODER
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);        // Set rightMotor to RUN_WITHOUT_ENCODER
@@ -219,6 +224,9 @@ public class HardwareCatBot
         lifterMotor.setPower(0);
         LEDblue.setPower(0);
         LEDred.setPower(0);
+
+        // Set all continuous rotation servos to zero power //
+        intakeRotateyThing.setPosition(INTAKE_INIT_POS);
 
         // Set all motors to run without encoders.
         runNoEncoders();
@@ -574,6 +582,7 @@ public class HardwareCatBot
             }
     }
 
+
     /**
      * ---   ________________________   ---
      * ---   Code for our lifting arm   ---
@@ -612,7 +621,7 @@ public class HardwareCatBot
         lifterMotor.setTargetPosition(armPositions[armIndex]);
         lifterMotor.setPower(0.35);
 
-}
+    }
     /*
     periodicTask - call periodically and the motor will slowly move toward the "target"
         This replaces setting the servo directly - causes the motor to move a bit slower
@@ -652,6 +661,8 @@ public class HardwareCatBot
             }
         }
     }
+
+
     /**
      * ---   _________________________________   ---
      * ---     Code for our Mecanum input! :D    ---
@@ -669,6 +680,7 @@ public class HardwareCatBot
         intakeMotorLeft.setPower(0);
         intakeMotorRight.setPower(0);
     }
+
 
     /**
      * ---   ________________________   ---
@@ -716,6 +728,8 @@ public class HardwareCatBot
         }
 
     }
+
+
     /**
      * ---   _____________   ---
      * ---   Color Methods   ---
@@ -747,9 +761,11 @@ public class HardwareCatBot
 
         return glyphColor;
     }
+
+
     /**
      * ---   _________________________   ---
-     * ---   JewelQualitySmakage sutff   ---
+     * ---   JewelQualitySmackage stuff   ---
      * ---    \/ \/ \/ \/ \/ \/ \/ \/    ---
      */
     public void jewelSmackerDown() {
@@ -762,7 +778,7 @@ public class HardwareCatBot
          * This Method also sets up the color sensor to sense the jewel...
          * This is done before smacking the jewel...
          */
-        jewelFlipper.setPosition(JEWEL_CENTER);
+        jewelFlipper.setPosition(FLIPPER_CENTER);
         jewelArm.setPosition(ARM_DOWN);
     }
     public void jewelSmackerUp()   {
@@ -776,10 +792,23 @@ public class HardwareCatBot
          * This is done after smacking the jewel and during TeleOp...
          */
         jewelArm.setPosition(ARM_UP);
+        robotWait(0.2);
+        jewelFlipper.setPosition(FLIPPER_LEFT);
     }
+    public void jewelFlipperLeft(){
+        jewelFlipper.setPosition(FLIPPER_LEFT);
+    }
+    public void jewelFlipperRight(){
+        jewelFlipper.setPosition(FLIPPER_RIGHT);
+    }
+    public void jewelFlipperCenter(){
+        jewelFlipper.setPosition(FLIPPER_CENTER);
+    }
+
+
     /**
      * ---   ____________   ---
-     * ---   Vumark sutff   ---
+     * ---   Vumark stuff   ---
      * ---   \/ \/ \/ \/    ---
      */
     public String format(OpenGLMatrix transformationMatrix) {
