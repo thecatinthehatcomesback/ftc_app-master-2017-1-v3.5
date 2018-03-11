@@ -88,7 +88,9 @@ public class ShulesTeleOp extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         // Set jewel smacker to up pos
-        robot.jewelSmackerUp();              // Init After start b/c it was called a "major movement"... ugh!
+        robot.jewelSmackerUp();  // Init After start b/c it was called a "major movement"... ugh!
+
+        // LED code
         robot.blinkyTimer.reset();
         robot.blinky(robot.allianceColor);
         robot.endgameOfAuto.reset();
@@ -96,6 +98,8 @@ public class ShulesTeleOp extends LinearOpMode {
         // go
         runtime.reset();
         double driveSpeed;
+        double intakeRotateSpeed;
+        double lifterPowerAdd;
 
 
         // run until the end of the match (driver presses STOP)
@@ -106,12 +110,11 @@ public class ShulesTeleOp extends LinearOpMode {
                 break;
             }
 
-            robot.periodicTask();
 
             /**
-             * ---   __________________   ---
-             * ---   Gamepad 1 STUFF!!!   ---
-             * ---    \/ \/ \/ \/ \/      ---
+             * ---------   __________________   ---------
+             * ---------   Gamepad 1 STUFF!!!   ---------
+             * ---------    \/ \/ \/ \/ \/      ---------
              */
 
 
@@ -133,12 +136,17 @@ public class ShulesTeleOp extends LinearOpMode {
 
             double left = 0;
             double right = 0;
-            //  ---  SPEED BOOST!!!  --- //
+            //  ---  SPEED/SLOW BOOST!!!  --- //
             if (gamepad1.left_bumper) {
                 driveSpeed = 1;
+            } else if (gamepad1.right_bumper) {
+                driveSpeed = 0.4;
             } else {
                 driveSpeed = 0.8;
             }
+
+
+            // Switch between more drive mode types
             switch (driveMode) {
 
                 //  --- Yay it works!! ---
@@ -176,25 +184,36 @@ public class ShulesTeleOp extends LinearOpMode {
             robot.drive(left, right);
 
 
+
+
             /**
-             * ---   __________________   ---
-             * ---   Gamepad 2 STUFF!!!   ---
-             * ---    \/ \/ \/ \/ \/      ---
+             * ---------   __________________   ---------
+             * ---------   Gamepad 2 STUFF!!!   ---------
+             * ---------    \/ \/ \/ \/ \/      ---------
              */
 
+            if (gamepad2.a) {
+                lifterPowerAdd = 0.15;
+            } else {
+                lifterPowerAdd = 0.00;
+            }
             // lifter motor code //
             //// TODO: 1/27/2018 Add touch sensors to robot to detect the top and bottom of the lifter arm
-            robot.lifterMotor.setPower(gamepad2.right_stick_y);
+            robot.lifterMotor.setPower(-gamepad2.right_stick_y + lifterPowerAdd);  // Added a little bit to keep the heavy intake up...
             robot.periodicTask();
+
+            // servo rotatey thingy //
+            intakeRotateSpeed = (robot.INTAKE_INIT_POS + (gamepad2.left_stick_x/1.5));
+            robot.intakeRotateyThing.setPosition(intakeRotateSpeed);
 
             // code for the intake motors //
             robot.intakeMotorLeft.setPower(gamepad2.left_trigger);
             robot.intakeMotorRight.setPower(gamepad2.right_trigger);
             if (gamepad2.left_bumper){
-                robot.intakeMotorLeft.setPower(-0.5);
+                robot.intakeMotorLeft.setPower(-0.8);
             }
             if (gamepad2.right_bumper){
-                robot.intakeMotorRight.setPower(-0.5);
+                robot.intakeMotorRight.setPower(-0.8);
             }
 
             // jewel smacker //
@@ -207,7 +226,7 @@ public class ShulesTeleOp extends LinearOpMode {
             if (gamepad2.dpad_right)  {
                 robot.jewelFlipperRight();
             }
-            if (gamepad2.x) {
+            if (gamepad2.dpad_down) {
                 robot.jewelFlipperCenter();
             }
 

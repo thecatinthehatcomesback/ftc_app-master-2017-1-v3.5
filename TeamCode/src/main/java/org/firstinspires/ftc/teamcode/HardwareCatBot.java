@@ -10,6 +10,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Log;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -91,7 +93,7 @@ public class HardwareCatBot
     static final double     TURN_SPEED              = 0.6;
 
     static final double     ARM_UP                  = 0.56;
-    static final double     ARM_DOWN                = 0.3;
+    static final double     ARM_DOWN                = 0.27;
     static final double     FLIPPER_LEFT            = 1.0;
     static final double     FLIPPER_CENTER          = 0.45;
     static final double     FLIPPER_RIGHT           = 0.0;
@@ -282,7 +284,7 @@ public class HardwareCatBot
          * Here we chose the back (HiRes) camera (for greater range), but
          * for a competition robot, the front camera might be more convenient.
          */
-            VUParameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
+            VUParameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
             this.vuforia = ClassFactory.createVuforiaLocalizer(VUParameters);
 
             /**
@@ -309,6 +311,7 @@ public class HardwareCatBot
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
     public void runUsingEncoders(){
+
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
@@ -334,15 +337,17 @@ public class HardwareCatBot
     *  4) Distance Sensor gets to a certain range or less
     *  5) Finds line
     */
-    public void encoderDrive(double speed,
+    public double encoderDrive(double speed,
                              double distance,
                              double timeoutS, DRIVE_MODE driveMode) throws InterruptedException {
-        encoderDrive(speed, distance, timeoutS, driveMode, 0, 0);
+        return encoderDrive(speed, distance, timeoutS, driveMode, 0, 0);
     }
 
-    public void encoderDrive(double speed,
+    public double encoderDrive(double speed,
                          double distance,
                          double timeoutS, DRIVE_MODE driveMode, int rangeCM, double desiredAngle) throws InterruptedException {
+        double distanceDriven = 0;
+
         int newLeftTarget;
         int newRightTarget;
         ElapsedTime     runtime = new ElapsedTime();
@@ -410,7 +415,7 @@ public class HardwareCatBot
 
                     angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
-                    if (angles.thirdAngle < 60){
+                    if (angles.thirdAngle < 60) {
                         keepDriving = false;
                     }
                 } else if (driveMode == DRIVE_MODE.driveOffBalance) {
@@ -422,7 +427,7 @@ public class HardwareCatBot
 
                     //// TODO: 2/7/2018 CHANGED THIS FROM 88 to 90 because the imu changed today...
                     // Just cut the crap... STOP AT AN ABSOLUTE!!!
-                    if (angles.thirdAngle < 90) {
+                    if (angles.thirdAngle <= 91) {
                         keepDriving = false;
                     }
 
@@ -458,8 +463,10 @@ public class HardwareCatBot
 
             // Stop all motion;
             drive(0, 0);
+            distanceDriven = (double) (leftMotor.getCurrentPosition() / COUNTS_PER_INCH);
             runNoEncoders();
         }
+        return distanceDriven;
     }
     /*
    *  Method to turn based on the value of the gyro.
@@ -592,11 +599,9 @@ public class HardwareCatBot
     private int armPositions[] = {
                     // LifterArm moves a total of 3/8 of a turn
             0,      // 0,     // Resting
-            3000,   //300,   // Less Resting
-            6000,   //675,   // pos 1 (...)
-            9000,   //925,   // pos 2 (...)
-            12000,  //1200,  // pos 3 (...)
-            16700,  //1350,  // pos 4 (Highest)
+            600,   //300,   // Less Resting
+            1100,   //675,   // pos 1 (...)
+            2300,   //925,   // pos 2 (...)
     };
     public int armIndex = 0;
     public void lifterStepDown() {
@@ -605,7 +610,8 @@ public class HardwareCatBot
         }
         //  Set lifter to next step down
         lifterMotor.setTargetPosition(armPositions[armIndex]);
-        lifterMotor.setPower(0.35);
+        lifterMotor.setPower(0.7);
+        Log.d("catbot", String.format("stepdown target [%d] %d", armIndex, lifterMotor.getTargetPosition()));
 
     }
     public void lifterStepUp()   {
@@ -614,12 +620,14 @@ public class HardwareCatBot
         }
         //  Set lifter to next step up
         lifterMotor.setTargetPosition(armPositions[armIndex]);
-        lifterMotor.setPower(0.35);
+        lifterMotor.setPower(0.7);
+        Log.d("catbot", String.format("stepup target [%d] %d", armIndex, lifterMotor.getTargetPosition()));
 
     } public void lifterCurrentStep() {
         //  Set lifter to current step
         lifterMotor.setTargetPosition(armPositions[armIndex]);
-        lifterMotor.setPower(0.35);
+        lifterMotor.setPower(0.7);
+        Log.d("catbot", String.format("stepcurrent target [%d] %d", armIndex, lifterMotor.getTargetPosition()));
 
     }
     /*
@@ -737,7 +745,7 @@ public class HardwareCatBot
      */
     public boolean isRed() {
         //crgb
-        //DbgLog.msg("CatIsRed r: %d g: %d b: %d   %b", crgb[1], crgb[2], crgb[3], crgb[1] > crgb[3]);
+        Log.d("catbot", String.format("CatIsRed r: %d g: %d b: %d", jewelColors.red(), jewelColors.green(),jewelColors.blue()));
         if (jewelColors.red() > jewelColors.blue()) {
             return true;
         } else {

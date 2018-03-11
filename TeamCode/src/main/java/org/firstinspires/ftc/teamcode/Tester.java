@@ -16,6 +16,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -43,7 +44,7 @@ public class Tester extends LinearOpMode {
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap, this, false, false);
-
+        robot.lifterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Resetting Encoders");    //
@@ -71,12 +72,15 @@ public class Tester extends LinearOpMode {
         \*/
         double jewelPos;
         double flipperPos;
-        double intakeSpeed;
+        double intakeRotateSpeed;
+        int lifterPosition = 0;
 
         runtime.reset();
         robot.jewelSmackerDown();
         robot.robotWait(2);
         robot.jewelSmackerUp();
+        robot.lifterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.lifterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         while (opModeIsActive()){
             jewelPos = robot.jewelArm.getPosition();
@@ -98,13 +102,25 @@ public class Tester extends LinearOpMode {
                 robot.jewelArm.setPosition(jewelPos - 0.1);
                 runtime.reset();
             }
+            if (gamepad1.y && runtime.milliseconds() > 50){
+                lifterPosition += 10;
+                runtime.reset();
+                robot.lifterMotor.setTargetPosition(lifterPosition);
+                robot.lifterMotor.setPower(0.7);
+            }
+            if (gamepad1.a && runtime.milliseconds() > 50) {
+                lifterPosition -= 10;
+                runtime.reset();
+                robot.lifterMotor.setTargetPosition(lifterPosition);
+                robot.lifterMotor.setPower(0.7);
+            }
 
             // servo rotatey thingy //
-            intakeSpeed = robot.INTAKE_INIT_POS - (gamepad2.right_stick_x/1.5);
-            robot.intakeRotateyThing.setPosition(intakeSpeed);
+            intakeRotateSpeed = robot.INTAKE_INIT_POS - (gamepad2.right_stick_x/1.5);
+            robot.intakeRotateyThing.setPosition(intakeRotateSpeed);
 
             // Lifter Motor //
-            robot.lifterMotor.setPower(-gamepad2.left_stick_y);
+            //robot.lifterMotor.setPower(-gamepad2.left_stick_y);
             robot.periodicTask();
 
             // code for the intake motors //
@@ -128,11 +144,12 @@ public class Tester extends LinearOpMode {
             telemetry.addData("Jewel Position:", jewelPos);
             telemetry.addData("Flipper Position:", flipperPos);
             telemetry.addData("Current time:", runtime.seconds());
-            telemetry.addData("rotatey thingy:", intakeSpeed);
+            telemetry.addData("rotatey thingy:", intakeRotateSpeed);
             telemetry.addData("alpha:", robot.jewelColors.alpha());
             telemetry.addData("red:", robot.jewelColors.red());
             telemetry.addData("blue:", robot.jewelColors.blue());
             telemetry.addData("green:", robot.jewelColors.green());
+            telemetry.addData("lifter position", lifterPosition);
 
             /**
              * Telemetry for Glyph Censor

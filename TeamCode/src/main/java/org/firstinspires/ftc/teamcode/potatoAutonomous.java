@@ -45,8 +45,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
@@ -75,6 +78,9 @@ public class potatoAutonomous extends LinearOpMode {
          */
         robot.init(hardwareMap, this, true, false);
         robot.jewelSmackerUp();
+        robot.jewelFlipperLeft();
+        robot.lifterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.lifterMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Resetting Encoders");    //
@@ -121,6 +127,7 @@ public class potatoAutonomous extends LinearOpMode {
                 } else {
                     isRedMission = true;
                 }
+                delaytimer.reset();
             }
 
             if (gamepad1.dpad_right && delaytimer.seconds() > 0.8) {
@@ -129,6 +136,7 @@ public class potatoAutonomous extends LinearOpMode {
                 } else {
                     stonePos = HardwareCatBot.StonePos.Audience;
                 }
+                delaytimer.reset();
             }
 
             telemetry.addData("Delay Timer: ", timeDelay);
@@ -165,9 +173,11 @@ public class potatoAutonomous extends LinearOpMode {
          */
         // Lower the JewelSmacker
         robot.jewelSmackerDown();
-
-        // Look for the Column to put the block in and set appropriate mission
+        delaytimer.reset();
+        Log.d("catbot", "smackerDown ");
         mission = robot.findVuMarks(3.0);
+        Log.d("catbot", "finishVumark ");
+        robot.lifterStepUp();
         // Wait for JewelSmacker a wee bit
         while (delaytimer.milliseconds() < 400.0) {
             idle();
@@ -175,25 +185,34 @@ public class potatoAutonomous extends LinearOpMode {
 
 
         // Use JewelColors to sense the color of the jewel and turn appropriately
-        if ((robot.isRed() && isRedMission) || (robot.isRed() && !isRedMission)) { // Drive forward
+        if ((robot.isRed() && isRedMission) || (!robot.isRed() && !isRedMission)) { // Drive forward
             //  Knock it by moving the jewelFlipper...
+            Log.d("catbot", String.format("jewelRight Red %d Blue %d Mission %s",
+                    robot.jewelColors.red(), robot.jewelColors.blue(),isRedMission? "RED": "Blue"));
             robot.jewelFlipper.setPosition(robot.FLIPPER_RIGHT);
             robot.robotWait(0.5);
             robot.jewelSmackerUp();
 
-        } else if ((!robot.isRed() && isRedMission) || (!robot.isRed() && !isRedMission)) { // Drive backward
+        } else if ((!robot.isRed() && isRedMission) || (robot.isRed() && !isRedMission)) { // Drive backward
             //  Knock it by moving the jewelFlipper...
+            Log.d("catbot", String.format("jewelLeft Red %d Blue %d Mission %s",
+                robot.jewelColors.red(), robot.jewelColors.blue(),isRedMission? "RED": "Blue"));
+
             robot.jewelFlipper.setPosition(robot.FLIPPER_LEFT);
             robot.robotWait(0.5);
             robot.jewelSmackerUp();
         }
+        Log.d("catbot", "smackerUp");
 
-        // Drive forward a little and then off the balance and hopefully be in same place every time...
-        robot.encoderDrive(HardwareCatBot.CREEP_SPEED, 5, 4, HardwareCatBot.DRIVE_MODE.driveStraight);
-        robot.encoderDrive(HardwareCatBot.CREEP_SPEED, 20, 4, HardwareCatBot.DRIVE_MODE.driveOffBalance);
-        // Turn to center
-        robot.absoluteGyro(0.4, 0, 1.0, HardwareCatBot.TURN_MODE.PIVOT);
+        if (stonePos == HardwareCatBot.StonePos.Nah){
 
+            // Drive forward a little and then off the balance and hopefully be in same place every time...
+            robot.encoderDrive(HardwareCatBot.CREEP_SPEED, 5, 4, HardwareCatBot.DRIVE_MODE.driveStraight);
+            robot.encoderDrive(HardwareCatBot.CREEP_SPEED, 20, 4, HardwareCatBot.DRIVE_MODE.driveOffBalance);
+            // Turn to center
+            robot.absoluteGyro(0.4, 0, 1.0, HardwareCatBot.TURN_MODE.PIVOT);
+
+        }
         /**
          * At this point we only have knocked the jewel off and have flattened out in front of the Stone
          */
@@ -257,30 +276,79 @@ public class potatoAutonomous extends LinearOpMode {
      * ---   \/ \/   ---
      */
     private void nahRed() throws InterruptedException {
-        switch (mission) {
 
-            case LEFT:
-                // everything you own in a box to THE LEFT
-                telemetry.addData("Mission:", "LEFT");
-                telemetry.update();
-                robot.robotWait(1);
-                break;
-            case CENTER:
-                // In THE MIDDLE of a memory
-                telemetry.addData("Mission:", "CENTER");
-                telemetry.update();
-                robot.robotWait(1);
-                break;
-            case RIGHT:
-                // mysterious as THE RIGHT SIDE of the moon
-                telemetry.addData("Mission:", "RIGHT");
-                telemetry.update();
-                robot.robotWait(1);
-                break;
+            robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+
+            switch (mission) {
+
+                case RIGHT:
+                    // everything you own in a box to THE LEFT
+                    telemetry.addData("Mission:", "RIGHT");
+                    telemetry.update();
+                    robot.robotWait(1);
+                    robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 85, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                    robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 25, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+                    break;
+                case CENTER:
+                    // In THE MIDDLE of a memory
+                    telemetry.addData("Mission:", "CENTER");
+                    telemetry.update();
+
+                    break;
+                case LEFT:
+                    // mysterious as THE RIGHT SIDE of the moon
+                    telemetry.addData("Mission:", "LEFT");
+                    telemetry.update();
+
+                    break;
+            }
+            telemetry.update();
+
+            // Spit out the Glyph...
+            robot.mecanumOut();
+            robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+            robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+            robot.mecanumStop();
+            // Just finished placing the glyph in the correct column...
+
+            // Turn to a center point to grab glyphs...
+            switch (mission)  {
+                case RIGHT:
+                    robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -50, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                    break;
+                case CENTER:
+                    robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -40, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                    break;
+                case LEFT:
+                    robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -30, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                    break;
+            }
+
+            /**
+             * Now go grab some extra glyphs!!
+             */
+
+            // Get there at hyper speed!!
+            robot.encoderDrive(HardwareCatBot.HYPER_SPEED, 30, 5.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+            // Start the intake up and grab some glyphs
+            robot.mecanumIn();
+            robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 25, 8, HardwareCatBot.DRIVE_MODE.driveStraight);
+            robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -30, 8, HardwareCatBot.DRIVE_MODE.driveStraight);
+            robot.mecanumStop();
+            //// TODO: 3/3/2018 This is where we need the OpenCV stuff and color sensors and data logging!!
+
+            /**
+             * Turn around and place the glyphs center column...
+             */
+            robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 100, 3, HardwareCatBot.TURN_MODE.PIVOT);
+            robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 35, 7, HardwareCatBot.DRIVE_MODE.driveStraight);
+
+            // Spit out the Glyph...
+            robot.mecanumOut();
+            robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+            robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+            robot.mecanumStop();
         }
-        telemetry.update();
-
-    }
 
 
     /**
@@ -290,29 +358,30 @@ public class potatoAutonomous extends LinearOpMode {
      */
     private void nahBlue() throws InterruptedException {
         //// TODO: 3/3/2018 THIS WORKS NOW!!  STILL NEED TO EDIT THE ANGLES!!
-        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 7.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
 
         switch (mission) {
 
             case RIGHT:
                 // everything you own in a box to THE LEFT
-                telemetry.addData("Mission:", "RIGHT");
-                telemetry.update();
-                robot.robotWait(1);
-                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 85, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                Log.d("catbot", "right");
+                robot.jewelFlipperRight();
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 90, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
                 robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 25, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
                 break;
             case CENTER:
                 // In THE MIDDLE of a memory
-                telemetry.addData("Mission:", "CENTER");
-                telemetry.update();
-
+                Log.d("catbot", "center");
+                robot.jewelFlipperCenter();
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 100, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 28, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
                 break;
             case LEFT:
                 // mysterious as THE RIGHT SIDE of the moon
-                telemetry.addData("Mission:", "LEFT");
-                telemetry.update();
-
+                Log.d("catbot", "left");
+                robot.jewelFlipperLeft();
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 112, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 31, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
                 break;
         }
         telemetry.update();
@@ -320,20 +389,21 @@ public class potatoAutonomous extends LinearOpMode {
         // Spit out the Glyph...
         robot.mecanumOut();
         robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
-        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -7.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
         robot.mecanumStop();
+        robot.lifterStepDown();
         // Just finished placing the glyph in the correct column...
 
         // Turn to a center point to grab glyphs...
         switch (mission)  {
             case RIGHT:
-                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -50, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -55, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
                 break;
             case CENTER:
-                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -40, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -50, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
                 break;
             case LEFT:
-                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -30, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -45, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
                 break;
         }
 
@@ -342,25 +412,31 @@ public class potatoAutonomous extends LinearOpMode {
          */
 
         // Get there at hyper speed!!
-        robot.encoderDrive(HardwareCatBot.HYPER_SPEED, 30, 5.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.encoderDrive(HardwareCatBot.HYPER_SPEED, 28, 5.0, HardwareCatBot.DRIVE_MODE.driveStraight);
         // Start the intake up and grab some glyphs
         robot.mecanumIn();
-        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 25, 8, HardwareCatBot.DRIVE_MODE.driveStraight);
-        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -30, 8, HardwareCatBot.DRIVE_MODE.driveStraight);
+        double driven;
+        driven = robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 25, 3, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -driven, 4, HardwareCatBot.DRIVE_MODE.driveStraight);
         robot.mecanumStop();
         //// TODO: 3/3/2018 This is where we need the OpenCV stuff and color sensors and data logging!!
 
         /**
          * Turn around and place the glyphs center column...
          */
-        robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 100, 3, HardwareCatBot.TURN_MODE.PIVOT);
-        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 35, 7, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.lifterStepUp();
+        robot.lifterStepUp();
+        robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 105, 3, HardwareCatBot.TURN_MODE.PIVOT);
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 25, 3, HardwareCatBot.DRIVE_MODE.driveStraight);
 
         // Spit out the Glyph...
         robot.mecanumOut();
         robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
-        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -7.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
         robot.mecanumStop();
+        robot.lifterStepDown();
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED,7.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -5.0,2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
     }
 
 
@@ -370,21 +446,101 @@ public class potatoAutonomous extends LinearOpMode {
      * ---   \/ \/ \/ \/   ---
      */
     private void audienceBlue() throws InterruptedException {
+        //robot.encoderDrive(HardwareCatBot.CREEP_SPEED, 2.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.absoluteGyro(HardwareCatBot.CHILL_SPEED, 70, 2.0, HardwareCatBot.TURN_MODE.PIVOT);
+        // Drive forward a little and then off the balance and hopefully be in same place every time...
+        robot.encoderDrive(HardwareCatBot.CREEP_SPEED, 5, 4, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.encoderDrive(HardwareCatBot.CREEP_SPEED, 20, 4, HardwareCatBot.DRIVE_MODE.driveOffBalance);
+        // Turn to center
+        robot.absoluteGyro(0.4, 90, 1.0, HardwareCatBot.TURN_MODE.PIVOT);
+
+
         switch (mission) {
 
             case RIGHT:
-                telemetry.addData("Mission:", "RIGHT");
-                robot.robotWait(1);
+                Log.d("catbot", "right");
+                robot.jewelFlipperRight();
+                robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 5.0, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 128, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 7.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+                telemetry.update();
                 break;
             case CENTER:
-                telemetry.addData("Mission:", "CENTER");
-                robot.robotWait(1);
+                Log.d("catbot", "center");
+                robot.jewelFlipperCenter();
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 137, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 5, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
                 break;
             case LEFT:
-                telemetry.addData("Mission:", "LEFT");
-                robot.robotWait(1);
+                Log.d("catbot", "left");
+                robot.jewelFlipperLeft();
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 166, 5, HardwareCatBot.TURN_MODE.PIVOT);
+                robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 3, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
                 break;
         }
+
+        // Spit out the Glyph...
+        robot.mecanumOut();
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -7.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.mecanumStop();
+        robot.lifterStepDown();
+        // Just finished placing the glyph in the correct column...
+
+        // Turn to a center point to grab glyphs...
+        switch (mission)  {
+            case RIGHT:
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 10, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                break;
+            case CENTER:
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 15, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                break;
+            case LEFT:
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 20, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                break;
+        }
+
+        /**
+         * Now go grab some extra glyphs!!
+         */
+
+        // Get there at hyper speed!!
+        robot.encoderDrive(HardwareCatBot.HYPER_SPEED, 8, 5.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+
+        // Start the intake up and grab some glyphs
+        robot.mecanumIn();
+        double driven;
+        driven = robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 25, 3, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -driven, 4, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.mecanumStop();
+        //// TODO: 3/3/2018 This is where we need the OpenCV stuff and color sensors and data logging!!
+
+        /**
+         * Turn around and place the glyphs center column...
+         */
+        robot.lifterStepUp();
+        robot.lifterStepUp();
+
+        switch (mission) {
+            case RIGHT:
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 150, 3, HardwareCatBot.TURN_MODE.PIVOT);
+                break;
+            case CENTER:
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 155, 3, HardwareCatBot.TURN_MODE.PIVOT);
+                break;
+            case LEFT:
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 150, 3, HardwareCatBot.TURN_MODE.PIVOT);
+                break;
+        }
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 15, 3, HardwareCatBot.DRIVE_MODE.driveStraight);
+
+        // Spit out the Glyph...
+        robot.mecanumOut();
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -7.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.lifterStepDown();
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 7.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
 
     }
 }
