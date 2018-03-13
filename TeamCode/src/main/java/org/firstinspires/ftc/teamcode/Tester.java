@@ -116,7 +116,7 @@ public class Tester extends LinearOpMode {
             }
 
             // servo rotatey thingy //
-            intakeRotateSpeed = robot.INTAKE_INIT_POS - (gamepad2.right_stick_x/1.5);
+            intakeRotateSpeed = robot.SERVO_NEUTRAL_POWER - (gamepad2.right_stick_x/1.5);
             robot.intakeRotateyThing.setPosition(intakeRotateSpeed);
 
             // Lifter Motor //

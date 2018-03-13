@@ -203,8 +203,8 @@ public class ShulesTeleOp extends LinearOpMode {
             robot.periodicTask();
 
             // servo rotatey thingy //
-            intakeRotateSpeed = (robot.INTAKE_INIT_POS + (gamepad2.left_stick_x/1.5));
-            robot.intakeRotateyThing.setPosition(intakeRotateSpeed);
+            intakeRotateSpeed = (robot.SERVO_NEUTRAL_POWER - (gamepad2.left_stick_x));
+            robot.intakeRotateyThing.setPosition(robot.SERVO_NEUTRAL_POWER - (gamepad2.left_stick_x));
 
             // code for the intake motors //
             robot.intakeMotorLeft.setPower(gamepad2.left_trigger);

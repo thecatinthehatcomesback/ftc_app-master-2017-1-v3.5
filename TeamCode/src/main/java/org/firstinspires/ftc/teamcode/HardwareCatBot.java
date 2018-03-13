@@ -93,12 +93,12 @@ public class HardwareCatBot
     static final double     TURN_SPEED              = 0.6;
 
     static final double     ARM_UP                  = 0.56;
-    static final double     ARM_DOWN                = 0.27;
+    static final double     ARM_DOWN                = 0.2;
     static final double     FLIPPER_LEFT            = 1.0;
     static final double     FLIPPER_CENTER          = 0.45;
     static final double     FLIPPER_RIGHT           = 0.0;
 
-    static final double     INTAKE_INIT_POS         = 0.5;
+    static final double     SERVO_NEUTRAL_POWER     = 0.5;
 
     static final double     JEWEL_UP                = 0.9;
     static final double     JEWEL_DOWN              = 0.35;
@@ -228,7 +228,7 @@ public class HardwareCatBot
         LEDred.setPower(0);
 
         // Set all continuous rotation servos to zero power //
-        intakeRotateyThing.setPosition(INTAKE_INIT_POS);
+        intakeRotateyThing.setPosition(SERVO_NEUTRAL_POWER);
 
         // Set all motors to run without encoders.
         runNoEncoders();
@@ -677,8 +677,8 @@ public class HardwareCatBot
      * ---   \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/    ---
      */
     public void mecanumOut() {
-        intakeMotorLeft.setPower(-0.3);
-        intakeMotorRight.setPower(-0.3);
+        intakeMotorLeft.setPower(-0.7);
+        intakeMotorRight.setPower(-0.7);
     }
     public void mecanumIn() {
         intakeMotorLeft.setPower(1.0);
