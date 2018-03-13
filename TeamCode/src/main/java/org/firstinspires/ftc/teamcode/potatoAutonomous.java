@@ -264,8 +264,8 @@ public class potatoAutonomous extends LinearOpMode {
                 Log.d("catbot", "right");
                 robot.jewelFlipperRight();
                 robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 5.0, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
-                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -100, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
-                robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 7.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -120, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 8.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
                 telemetry.update();
                 break;
             case CENTER:
@@ -293,13 +293,13 @@ public class potatoAutonomous extends LinearOpMode {
         // Turn to a center point to grab glyphs...
         switch (mission)  {
             case LEFT:
-                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 5, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -15, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
                 break;
             case CENTER:
-                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 15, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -20, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
                 break;
             case RIGHT:
-                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 12, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -15, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
                 break;
         }
 
@@ -329,7 +329,7 @@ public class potatoAutonomous extends LinearOpMode {
                 robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -150, 3, HardwareCatBot.TURN_MODE.PIVOT);
                 break;
             case CENTER:
-                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -155, 3, HardwareCatBot.TURN_MODE.PIVOT);
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -150, 3, HardwareCatBot.TURN_MODE.PIVOT);
                 break;
             case LEFT:
                 robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -150, 3, HardwareCatBot.TURN_MODE.PIVOT);
