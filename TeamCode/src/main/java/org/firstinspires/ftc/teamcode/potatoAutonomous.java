@@ -262,7 +262,7 @@ public class potatoAutonomous extends LinearOpMode {
 
             case LEFT:
                 Log.d("catbot", "right");
-                robot.jewelFlipperRight();
+                robot.jewelFlipperLeft();
                 robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 5.0, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
                 robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -120, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
                 robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 8.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
@@ -276,7 +276,7 @@ public class potatoAutonomous extends LinearOpMode {
                 break;
             case RIGHT:
                 Log.d("catbot", "left");
-                robot.jewelFlipperLeft();
+                robot.jewelFlipperRight();
                 robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -157, 5, HardwareCatBot.TURN_MODE.PIVOT);
                 robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 5, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
                 break;
@@ -362,7 +362,7 @@ public class potatoAutonomous extends LinearOpMode {
             case LEFT:
                 // everything you own in a box to THE LEFT
                 Log.d("catbot", "right");
-                robot.jewelFlipperRight();
+                robot.jewelFlipperLeft();
                 robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -77, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
                 robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 25, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
                 break;
@@ -376,7 +376,7 @@ public class potatoAutonomous extends LinearOpMode {
             case RIGHT:
                 // mysterious as THE RIGHT SIDE of the moon
                 Log.d("catbot", "left");
-                robot.jewelFlipperLeft();
+                robot.jewelFlipperRight();
                 robot.absoluteGyro(HardwareCatBot.TURN_SPEED, -97, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
                 robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 31, 3.0, HardwareCatBot.DRIVE_MODE.driveStraight);
                 break;

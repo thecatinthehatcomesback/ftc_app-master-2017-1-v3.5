@@ -192,19 +192,29 @@ public class ShulesTeleOp extends LinearOpMode {
              * ---------    \/ \/ \/ \/ \/      ---------
              */
 
+            // lifter motor code //
             if (gamepad2.a) {
                 lifterPowerAdd = 0.15;
             } else {
                 lifterPowerAdd = 0.00;
             }
-            // lifter motor code //
             //// TODO: 1/27/2018 Add touch sensors to robot to detect the top and bottom of the lifter arm
             robot.lifterMotor.setPower(-gamepad2.left_stick_y + lifterPowerAdd);  // Added a little bit to keep the heavy intake up...
             robot.periodicTask();
 
-            // servo rotatey thingy //
-            intakeRotateSpeed = (robot.SERVO_NEUTRAL_POWER - (gamepad2.left_stick_x));
-            robot.intakeRotateyThing.setPosition(robot.SERVO_NEUTRAL_POWER - (gamepad2.left_stick_x));
+
+            /* --- servo rotatey thingy --- */
+            // Set the servo speed...
+            intakeRotateSpeed = robot.SERVO_NEUTRAL_POWER - gamepad2.right_stick_x/2;
+            // Fail safe code for when the end of the world comes...
+            if (intakeRotateSpeed > 1.0) {
+                intakeRotateSpeed = 1.0;
+            } else if (intakeRotateSpeed < 0.0) {
+                intakeRotateSpeed = 1.0;
+            }
+
+            // Actually move the servo
+            robot.intakeRotateyThing.setPosition(intakeRotateSpeed);
 
             // code for the intake motors //
             robot.intakeMotorLeft.setPower(gamepad2.left_trigger);
