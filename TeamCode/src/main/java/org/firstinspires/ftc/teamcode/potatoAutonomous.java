@@ -243,6 +243,19 @@ public class potatoAutonomous extends LinearOpMode {
             audienceBlue();
         }
 
+        /**
+         *  WAG THE TAIL!!
+         */
+        delaytimer.reset();
+        robot.jewelArm.setPosition(robot.ARM_ALMOST_UP);
+        while (opModeIsActive()) {
+            if (delaytimer.milliseconds() > robot.TAIL_SWITCH_TIME_MS *2) {
+                delaytimer.reset();
+                robot.jewelFlipperLeft();
+            } else if (delaytimer.milliseconds() > robot.TAIL_SWITCH_TIME_MS) {
+                robot.jewelFlipperRight();
+            }
+        }
     }
 
 

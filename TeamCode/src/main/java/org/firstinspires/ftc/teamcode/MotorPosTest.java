@@ -63,7 +63,7 @@ public class MotorPosTest extends LinearOpMode {
             if (gamepad2.a) {
                 robot.lifterMotor.setTargetPosition(robot.lifterMotor.getTargetPosition() + 25);
             }
-            robot.periodicTask();
+            robot.periodicTeleOpTask();
 
             /**
              * ---   _________   ---

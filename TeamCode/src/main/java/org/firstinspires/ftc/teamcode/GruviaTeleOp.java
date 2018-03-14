@@ -200,7 +200,7 @@ public class GruviaTeleOp extends LinearOpMode {
                 liftArmSwitch.reset();      //  Reset the time so we don't just stack it up infinitely
             }
             robot.lifterMotor.setTargetPosition(limitRange(robot.lifterMotor.getTargetPosition() + Math.round(-gamepad2.right_stick_y * 25), -10, 1350));
-            robot.periodicTask();
+            robot.periodicTeleOpTask();
 
             // gripper code //
             robot.gripperMotor.setPower(gamepad2.left_stick_x * 0.3);

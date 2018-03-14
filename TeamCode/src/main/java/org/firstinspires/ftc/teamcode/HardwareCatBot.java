@@ -93,6 +93,7 @@ public class HardwareCatBot
     static final double     TURN_SPEED              = 0.6;
 
     static final double     ARM_UP                  = 0.56;
+    static final double     ARM_ALMOST_UP           = ARM_UP * 3/4;
     static final double     ARM_DOWN                = 0.2;
     static final double     FLIPPER_LEFT            = 1.0;
     static final double     FLIPPER_CENTER          = 0.45;
@@ -105,6 +106,8 @@ public class HardwareCatBot
 
     static final double     LEDpower                = 1.0;
     static LED_LightUpType  allianceColor           = LED_LightUpType.RED;
+
+    static final double     TAIL_SWITCH_TIME_MS     = 750;
 
     enum DRIVE_MODE {
         driveStraight,
@@ -124,7 +127,8 @@ public class HardwareCatBot
         RED,
         BLUE,
         BOTH,
-        NONE
+        NONE,
+        ALTERNATE
     }
 
     /**
@@ -583,7 +587,7 @@ public class HardwareCatBot
     public void robotWait(double seconds) {
         ElapsedTime delaytimer = new ElapsedTime();
         while (opMode.opModeIsActive()  &&  (delaytimer.seconds() < seconds)){
-            periodicTask();
+            periodicTeleOpTask();
             //adjustGripper();
             opMode.idle();
             }
@@ -631,11 +635,11 @@ public class HardwareCatBot
 
     }
     /*
-    periodicTask - call periodically and the motor will slowly move toward the "target"
+    periodicTeleOpTask - call periodically and the motor will slowly move toward the "target"
         This replaces setting the servo directly - causes the motor to move a bit slower
         which we hope will keep the gears from stripping when it moves between armPositions.
      */
-    public void periodicTask()  {
+    public void periodicTeleOpTask()  {
         // adjustArm code...
         /*if (Math.abs(lifterMotor.getCurrentPosition() - lifterMotor.getTargetPosition()) > 7) {
             lifterMotor.setPower(0.35);
@@ -654,8 +658,20 @@ public class HardwareCatBot
         // After the blinkLength turn the LEDs off...
 
         // Code for blinky
-        if (endgameOfAuto.seconds() > 110 && numTimes < 8) {
-            if (blinkyTimer.milliseconds() > 500) { // if time greater than .5 sec...
+        if (endgameOfAuto.seconds() > 110 && numTimes < 27) {
+
+            if (blinkyTimer.milliseconds() > 300) {
+                // Alternate lights...
+                blinky(LED_LightUpType.ALTERNATE);
+                // turn off the lights and reset the timer...
+                blinkyTimer.reset();
+                numTimes++;
+            }
+
+            /**
+             *  -----OLD CODE-----
+             */
+            /*if (blinkyTimer.milliseconds() > 500) { // if time greater than .5 sec...
                 // turn on lights and reset timer...
                 blinky(LED_LightUpType.NONE);
                 if (blinkyTimer.milliseconds() > 1000) { // then if time is greater than 1 sec...
@@ -666,7 +682,7 @@ public class HardwareCatBot
             } else {
                 // Turn on LED
                 blinky(LED_LightUpType.BOTH);
-            }
+            }*/
         }
     }
 
@@ -883,7 +899,7 @@ public class HardwareCatBot
 
     public void blinky(LED_LightUpType type) {
         /* yo turn on LED lights and make them BLINK! */
-
+        boolean LEDisBLUE = false;
         // Blink the lights!
         if (type == LED_LightUpType.BLUE) {
             LEDlights(true, false);
@@ -893,8 +909,18 @@ public class HardwareCatBot
             LEDlights(true, true);
         } else if (type == LED_LightUpType.NONE) {
             LEDlights(false, false);
+        } else if (type == LED_LightUpType.ALTERNATE) {
+            /**
+             *  Alternate between red and blue LEDs...
+             */
+            if (LEDisBLUE) {
+                LEDlights(false, true);
+                LEDisBLUE = false;
+            } else {
+                LEDlights(true, false);
+                LEDisBLUE = true;
+            }
         }
-
     }
 
 
