@@ -139,6 +139,15 @@ public class potatoAutonomous extends LinearOpMode {
                 delaytimer.reset();
             }
 
+            // LED code...
+            if (isRedMission) {
+                robot.blinky(HardwareCatBot.LED_LightUpType.RED);
+                robot.allianceColor = HardwareCatBot.LED_LightUpType.RED;
+            } else {
+                robot.blinky(HardwareCatBot.LED_LightUpType.BLUE);
+                robot.allianceColor = HardwareCatBot.LED_LightUpType.BLUE;
+            }
+
             telemetry.addData("Delay Timer: ", timeDelay);
 
             if (isRedMission) {
