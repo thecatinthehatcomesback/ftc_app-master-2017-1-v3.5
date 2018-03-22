@@ -79,10 +79,13 @@ public class TightenTheIdlersTest extends LinearOpMode {
         robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 24, 5, HardwareCatBot.DRIVE_MODE.driveStraight);
 
         // Make sure we are good on this side...
+        boolean passed180 = false;
         if (angles.firstAngle < 182  &&  angles.firstAngle > 178) {
             telemetry.addData("180 Degree Turn:", "Passed");
+            passed180 = true;
         } else {
-            telemetry.addData("180 Degree Turn:", "Failed");
+            telemetry.addData("180 Degree Turn:", "****Failed****");
+            passed180 = false;
             telemetry.addData("Angle:", String.format("IMU Angle = %d", robot.getAngle()));
         }
         telemetry.update();
@@ -106,9 +109,10 @@ public class TightenTheIdlersTest extends LinearOpMode {
         if (angles.firstAngle < 2  &&  angles.firstAngle > -2) {
             telemetry.addData("0 Degree Turn:", "Passed");
         } else {
-            telemetry.addData("0 Degree Turn:", "Failed");
+            telemetry.addData("0 Degree Turn:", "****Failed****");
             telemetry.addData("Angle:", String.format("IMU Angle = %d", robot.getAngle()));
         }
+        telemetry.addData("180 Degree Turn: ",passed180 ? "Passed" : "***Failed****");
         telemetry.update();
 
 

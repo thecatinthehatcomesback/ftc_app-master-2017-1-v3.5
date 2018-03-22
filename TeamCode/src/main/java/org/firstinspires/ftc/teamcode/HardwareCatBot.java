@@ -939,6 +939,21 @@ public class HardwareCatBot
     }
 
 
+
+
+    /**
+     * ---   ______________   ---
+     * ---   OpenCV methods   ---
+     * ---   \/ \/ \/ \/ \/   ---
+     */
+    public double spitCenterAngleOut(int dogeCVinput) {
+        //// TODO: 3/21/2018 Make it have a parameter to spit an angle for a specific column
+        double dogeAngle = 0;
+
+        return dogeAngle = (dogeCVinput - 400.0)/800.0;
+    }
+
+
     /**
      * ---   __________________   ---
      * ---   End of our methods   ---
