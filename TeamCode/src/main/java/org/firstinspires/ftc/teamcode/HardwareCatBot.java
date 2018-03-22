@@ -30,7 +30,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.firstinspires.ftc.robotcore.external.navigation.VuMarkInstanceId;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
@@ -43,7 +45,7 @@ import java.util.List;
  * This is NOT an opmode.
  *
  * This class can be used to define all the specific hardware for a single robot.
- * In this case that robot is the Cat in the Hat robot for 2016-2017
+ * In this case that robot is the Cat in the Hat robot for 2017-2018
  *
  * This hardware class assumes the following device names have been configured on the robot:
  * Note:  All names are lower case and some have single spaces between words.
@@ -236,23 +238,6 @@ public class HardwareCatBot
 
         // Set all motors to run without encoders.
         runNoEncoders();
-
-        // Set up the parameters with which we will use our IMU. Note that integration
-        // algorithm here just reports accelerations to the logcat log; it doesn't actually
-        // provide positional information.
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled = true;
-        parameters.loggingTag = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-
-        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
-        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
-        // and named "imu".
-        imu = hwMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
 
         if (vuforiaEnabled) {
 
@@ -559,6 +544,7 @@ public class HardwareCatBot
                 if ((zVal <= targetanglez) && (leftTurn)) {
                     break;
                 }
+                Log.d("catbot", String.format("target %d, current %d", targetanglez, zVal));
                 opMode.telemetry.addData("Path1",  "Running to %4d", targetanglez);
                 opMode.telemetry.addData("Path2", "Current angle is %4d" ,zVal);
                 opMode.telemetry.update();
@@ -897,9 +883,10 @@ public class HardwareCatBot
         }
     }
 
+    private boolean LEDisBLUE = false;
+
     public void blinky(LED_LightUpType type) {
         /* yo turn on LED lights and make them BLINK! */
-        boolean LEDisBLUE = false;
         // Blink the lights!
         if (type == LED_LightUpType.BLUE) {
             LEDlights(true, false);
@@ -921,6 +908,34 @@ public class HardwareCatBot
                 LEDisBLUE = true;
             }
         }
+    }
+
+
+    /**
+     * ---   ___________   ---
+     * ---   IMU Methods   ---
+     * ---   \/ \/ \/ \/   ---
+     */
+    public void IMUinit () {
+        // Set up the parameters with which we will use our IMU. Note that integration
+        // algorithm here just reports accelerations to the logcat log; it doesn't actually
+        // provide positional information.
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
+        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
+        // and named "imu".
+        imu = hwMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
+        imu.startAccelerationIntegration(new Position(), new Velocity(), 250);
+
     }
 
 

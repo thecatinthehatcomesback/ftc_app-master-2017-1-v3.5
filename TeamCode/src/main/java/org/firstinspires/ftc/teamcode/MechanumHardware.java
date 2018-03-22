@@ -20,7 +20,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  * This is NOT an opmode.
  *
  * This class can be used to define all the specific hardware for a single robot.
- * In this case that robot is the Cat in the Hat robot for 2016-2017
+ * In this case that robot is the Cat in the Hat robot for 2017-2018
  *
  * This hardware class assumes the following device names have been configured on the robot:
  * Note:  All names are lower case and some have single spaces between words.
