@@ -160,7 +160,7 @@ public class ShulesTeleOp extends LinearOpMode {
 
             /* --- servo rotatey thingy --- */
             // Set the servo speed...
-            intakeRotateSpeed = robot.SERVO_NEUTRAL_POWER - gamepad2.right_stick_x/2;
+            intakeRotateSpeed = robot.SERVO_NEUTRAL_POWER; // - gamepad2.right_stick_x/2;
             // Fail safe code for when the end of the world comes...
             if (intakeRotateSpeed > 1.0) {
                 intakeRotateSpeed = 1.0;
@@ -181,18 +181,20 @@ public class ShulesTeleOp extends LinearOpMode {
                 robot.intakeMotorRight.setPower(-0.8);
             }
 
-            // jewel smacker //
-            if (gamepad2.dpad_up) {
-                robot.jewelSmackerUp();
+            if (gamepad2.dpad_up){
+                robot.relicArmOut();
+            } else if (gamepad2.dpad_down){
+                robot.relicArmIn();
+            } else {
+                robot.relicArmStop();
             }
-            if (gamepad2.dpad_left) {
-                robot.jewelFlipperLeft();
-            }
-            if (gamepad2.dpad_right)  {
-                robot.jewelFlipperRight();
-            }
-            if (gamepad2.dpad_down) {
-                robot.jewelFlipperCenter();
+
+            if (gamepad2.dpad_left){
+                robot.relicElbow.setPower(0.7);
+            } else if(gamepad2.dpad_right){
+                robot.relicElbow.setPower(-0.7);
+            } else {
+                robot.relicElbow.setPower(0.0);
             }
 
 

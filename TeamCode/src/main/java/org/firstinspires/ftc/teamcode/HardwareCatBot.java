@@ -12,11 +12,15 @@ package org.firstinspires.ftc.teamcode;
 
 import android.util.Log;
 
+import com.disnodeteam.dogecv.CameraViewDisplay;
+import com.disnodeteam.dogecv.detectors.CryptoboxDetector;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -65,6 +69,7 @@ public class HardwareCatBot
     public DcMotor  intakeMotorLeft     = null;
     public DcMotor  LEDblue             = null;
     public DcMotor  LEDred              = null;
+    public DcMotor  relicOut            = null;
 
 
     //ModernRoboticsI2cRangeSensor andPeggy;
@@ -72,15 +77,21 @@ public class HardwareCatBot
     public Servo    jewelArm            = null;
     public Servo    jewelFlipper        = null;
     public Servo    intakeRotateyThing  = null;
+    public CRServo  relicIn             = null;
+    public CRServo  relicElbow          = null;
+    public Servo    relicGripper        = null;
     ColorSensor     jewelColors         = null;
     //ColorSensor     TopGlyphCensor      = null;
-    //DistanceSensor  TopGlyphDist        = null;
+    public DistanceSensor  topGlyphDist        = null;
+    public DistanceSensor  bottGlyphDist        = null;
 
     // Vuforia
     VuforiaLocalizer    vuforia;
     VuforiaTrackables   relicTrackables;
     RelicRecoveryVuMark vuMark;
     VuforiaTrackable    relicTemplate;
+    //dogecv ish
+    public CryptoboxDetector cryptoboxDetector = null;
 
 
     static final double     COUNTS_PER_MOTOR_REV    = 1120 ;    // eg: ANDYMARK Motor Encoder     (Check actual count for next year...)
@@ -106,6 +117,9 @@ public class HardwareCatBot
     static final double     JEWEL_UP                = 0.9;
     static final double     JEWEL_DOWN              = 0.35;
 
+    static final double     RELIC_GRIPPER_OPEN      = 0.05;
+    static final double     RELIC_GRIPPER_CLOSE     = 0.95;
+
     static final double     LEDpower                = 1.0;
     static LED_LightUpType  allianceColor           = LED_LightUpType.RED;
 
@@ -113,7 +127,8 @@ public class HardwareCatBot
 
     enum DRIVE_MODE {
         driveStraight,
-        driveOffBalance
+        driveOffBalance,
+        driveForGlyph //just like drive for straight but also checks for distance of the glyph
     }
     enum TURN_MODE {
         PIVOT,
@@ -191,6 +206,10 @@ public class HardwareCatBot
         leftMotor   = hwMap.dcMotor.get("left_motor");
         rightMotor  = hwMap.dcMotor.get("right_motor");
         lifterMotor = hwMap.dcMotor.get("lifter_motor");
+        relicOut    = hwMap.dcMotor.get("relic_of_the_out");
+        relicOut.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        relicOut.setPower(0.0);
+        relicOut.setDirection(DcMotorSimple.Direction.FORWARD);
         if (gripperInit) {  // init gripper if we in Gruvia
             gripperMotor = hwMap.dcMotor.get("gripper_motor");
             gripperMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD
@@ -214,9 +233,17 @@ public class HardwareCatBot
         jewelArm       = hwMap.servo.get("quality_jewel_smackage");
         jewelFlipper   = hwMap.servo.get("quality_arm_idealness");
         intakeRotateyThing   = hwMap.servo.get("intake_rotatey_thing");
+        relicElbow     = hwMap.crservo.get("elbow_of_the_relic_arm");
+        relicElbow.setPower(0.0);
+        relicElbow.setDirection(DcMotorSimple.Direction.FORWARD);
+        relicIn        = hwMap.crservo.get("arm_of_the_in");
+        relicIn.setPower(0.0);
+        relicIn.setDirection(DcMotorSimple.Direction.FORWARD);
+        relicGripper   = hwMap.servo.get("when_the_arm_grips_and_its_cool");
         jewelColors    = hwMap.colorSensor.get("seeing_red_makes_u_blue");
-        //TopGlyphCensor = hwMap.colorSensor.get("top_glyph_censor");
-        //TopGlyphDist   = hwMap.get(DistanceSensor.class, "top_glyph_censor");
+        //TopGlyphCensor = hwMap.colorSensor.get("top_glyph_sensor");
+        topGlyphDist   = hwMap.get(DistanceSensor.class, "top_glyph_sensor");
+        bottGlyphDist  = hwMap.get(DistanceSensor.class, "bott_glyph_sensor");
 
         leftMotor.setDirection(DcMotor.Direction.REVERSE);              // Set to REVERSE if using AndyMark motors
         rightMotor.setDirection(DcMotor.Direction.FORWARD);             // Set to FORWARD if using AndyMark motors
@@ -289,6 +316,17 @@ public class HardwareCatBot
         }
 
     }
+    public void initDogeCV(){
+        /*
+         *  Init the OpenCV...
+         */
+        cryptoboxDetector = new CryptoboxDetector();
+        cryptoboxDetector.init(hwMap.appContext, CameraViewDisplay.getInstance());
+
+        cryptoboxDetector.rotateMat = false;
+
+        cryptoboxDetector.enable();
+    }
     public void drive(double left, double right) {
 
         leftMotor.setPower(left);
@@ -314,6 +352,36 @@ public class HardwareCatBot
         leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
+    public double cryptoboxAngle(CryptoboxDetector cryptoboxDetector, SOCKmission column) {
+        double Angle = 0;
+        if (cryptoboxDetector.isColumnDetected()) {
+            switch (column) {
+                case LEFT:
+                    Angle = 0.11 * cryptoboxDetector.getCryptoBoxLeftPosition() + 39.25;
+                    break;
+                case CENTER:
+                    Angle = 0.93 * cryptoboxDetector.getCryptoBoxLeftPosition() + 52.7;
+                    break;
+                case RIGHT:
+                    Angle = 0.045 * cryptoboxDetector.getCryptoBoxLeftPosition() + 69.6;
+                    break;
+            }
+        }
+        return Angle;
+    }
+    public void relicArmIn(){
+        relicIn.setPower(0.8);
+        relicOut.setPower(-0.1);
+    }
+    public void relicArmOut(){
+        relicIn.setPower(-0.1);
+        relicOut.setPower(0.8);
+    }
+    public void relicArmStop(){
+        relicIn.setPower(0.0);
+        relicOut.setPower(0.0);
+    }
+
 
 
     /*
@@ -390,7 +458,7 @@ public class HardwareCatBot
                     keepDriving = false;
                 }
 
-                if (driveMode == DRIVE_MODE.driveStraight) {
+                if ((driveMode == DRIVE_MODE.driveStraight) || (driveMode == DRIVE_MODE.driveForGlyph)) {
                     if ((leftPosition > rightPosition) && ((leftPosition - rightPosition) > 20)) {
                         rightSpeed = rightSpeed * 1.001;
                         drive(leftSpeed, rightSpeed);
@@ -403,7 +471,16 @@ public class HardwareCatBot
                     }
 
                     angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                    if (driveMode == DRIVE_MODE.driveForGlyph) {
+                        if (topGlyphDist.getDistance(DistanceUnit.MM) <= 15) {
+                            keepDriving = false;
+                        }
+                        if (bottGlyphDist.getDistance(DistanceUnit.MM) <= 15) {
+                            keepDriving = false;
+                        }
+                    }
 
+                    //failsafeee
                     if (angles.thirdAngle < 60) {
                         keepDriving = false;
                     }
@@ -528,16 +605,25 @@ public class HardwareCatBot
 
             }
             // keep looping while we are still active, and there is time left, and both motors are running.
+            int wrapAdjust = 0;
+            boolean lastWasNegative = getAngle() < 0;
             while (opMode.opModeIsActive() &&
                     (runtime.seconds() < timeoutS)) {
 
                 int zVal = getAngle();
 
+                if ((prevGyro < 0) && (zVal > 0) && (leftTurn)) {
+                    wrapAdjust += 360;
+                }
+                if ((prevGyro > 0) && (zVal < 0) && (!leftTurn)) {
+                    wrapAdjust -= 360;
+                }
                 if (prevGyro != zVal) {
 
                     prevGyro = zVal;
                     gyroLoopCount ++;
                 }
+                zVal = zVal + wrapAdjust;
                 if ((zVal >= targetanglez) && (!leftTurn)){
                     break;
                 }
@@ -862,6 +948,9 @@ public class HardwareCatBot
             //telemetry.update();
         }
         return SOCKmission.CENTER;
+    }
+    public void shutDownVuforia(){
+        relicTrackables.deactivate();
     }
     /**
      * ---   __________________   ---

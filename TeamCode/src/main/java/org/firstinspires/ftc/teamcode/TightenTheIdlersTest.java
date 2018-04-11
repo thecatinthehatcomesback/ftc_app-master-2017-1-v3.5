@@ -18,8 +18,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 
 @Autonomous(name="Tighten Idlers Test", group="CatAuto")
@@ -57,7 +55,7 @@ public class TightenTheIdlersTest extends LinearOpMode {
 
         }
         //initilize the sensor :)
-        robot.imu.startAccelerationIntegration(new Position(), new Velocity(), 250);
+        robot.IMUinit();
         // IMU Sensor
         Orientation angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
@@ -73,20 +71,21 @@ public class TightenTheIdlersTest extends LinearOpMode {
          */
 
         // Turn completely around...
-        robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 180, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+        robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 90, 5.0, HardwareCatBot.TURN_MODE.PIVOT);
 
         // Drive a distance and check the angle...
-        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 24, 5, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 10, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
 
         // Make sure we are good on this side...
         boolean passed180 = false;
-        if (angles.firstAngle < 182  &&  angles.firstAngle > 178) {
-            telemetry.addData("180 Degree Turn:", "Passed");
+        int angle = robot.getAngle();
+        if (angle < 89  &&  angle > 91) {
+            telemetry.addData("90 Degree Turn:", "Passed");
             passed180 = true;
         } else {
-            telemetry.addData("180 Degree Turn:", "****Failed****");
+            telemetry.addData("90 Degree Turn:", "****Failed****");
             passed180 = false;
-            telemetry.addData("Angle:", String.format("IMU Angle = %d", robot.getAngle()));
+            telemetry.addData("Angle:", String.format("IMU Angle = %d", angle));
         }
         telemetry.update();
 
@@ -100,23 +99,24 @@ public class TightenTheIdlersTest extends LinearOpMode {
          */
 
         // Turn completely around...
-        robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 0, 3.0, HardwareCatBot.TURN_MODE.PIVOT);
+        robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 0, 5.0, HardwareCatBot.TURN_MODE.PIVOT);
 
         // Drive a distance and check the angle...
-        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 24, 5, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 10, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
 
         // Make sure we are good on this side...
-        if (angles.firstAngle < 2  &&  angles.firstAngle > -2) {
+        if (angles.firstAngle > 1  &&  angles.firstAngle < -1) {
             telemetry.addData("0 Degree Turn:", "Passed");
         } else {
             telemetry.addData("0 Degree Turn:", "****Failed****");
-            telemetry.addData("Angle:", String.format("IMU Angle = %d", robot.getAngle()));
         }
-        telemetry.addData("180 Degree Turn: ",passed180 ? "Passed" : "***Failed****");
+        telemetry.addData("Angle:", String.format("IMU Angle = %d", robot.getAngle()));
+        telemetry.addData("90 Degree Turn: ",passed180 ? "Passed" : "***Failed****");
+        telemetry.addData("90 angle", angle);
         telemetry.update();
 
 
         // Wait a bit to let the telemetry read...
-        robot.robotWait(3);
+        robot.robotWait(20);
     }
 }
