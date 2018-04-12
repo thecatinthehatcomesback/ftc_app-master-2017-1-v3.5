@@ -20,7 +20,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -207,9 +206,6 @@ public class HardwareCatBot
         rightMotor  = hwMap.dcMotor.get("right_motor");
         lifterMotor = hwMap.dcMotor.get("lifter_motor");
         relicOut    = hwMap.dcMotor.get("relic_of_the_out");
-        relicOut.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        relicOut.setPower(0.0);
-        relicOut.setDirection(DcMotorSimple.Direction.FORWARD);
         if (gripperInit) {  // init gripper if we in Gruvia
             gripperMotor = hwMap.dcMotor.get("gripper_motor");
             gripperMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD
@@ -228,30 +224,31 @@ public class HardwareCatBot
             lifterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);    // Reset the liftMotor when we init
             lifterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);      // Set lifterMotor to RUN_TO_POSITION
         }
-        LEDblue        = hwMap.dcMotor.get("led_blue");
-        LEDred         = hwMap.dcMotor.get("led_red");
-        jewelArm       = hwMap.servo.get("quality_jewel_smackage");
-        jewelFlipper   = hwMap.servo.get("quality_arm_idealness");
-        intakeRotateyThing   = hwMap.servo.get("intake_rotatey_thing");
-        relicElbow     = hwMap.crservo.get("elbow_of_the_relic_arm");
-        relicElbow.setPower(0.0);
-        relicElbow.setDirection(DcMotorSimple.Direction.FORWARD);
-        relicIn        = hwMap.crservo.get("arm_of_the_in");
-        relicIn.setPower(0.0);
-        relicIn.setDirection(DcMotorSimple.Direction.FORWARD);
-        relicGripper   = hwMap.servo.get("when_the_arm_grips_and_its_cool");
-        jewelColors    = hwMap.colorSensor.get("seeing_red_makes_u_blue");
+        LEDblue             = hwMap.dcMotor.get("led_blue");
+        LEDred              = hwMap.dcMotor.get("led_red");
+        jewelArm            = hwMap.servo.get("quality_jewel_smackage");
+        jewelFlipper        = hwMap.servo.get("quality_arm_idealness");
+        intakeRotateyThing  = hwMap.servo.get("intake_rotatey_thing");
+        relicElbow          = hwMap.crservo.get("elbow_of_the_relic_arm");
+        relicIn             = hwMap.crservo.get("arm_of_the_in");
+        relicGripper        = hwMap.servo.get("when_the_arm_grips_and_its_cool");
+        jewelColors         = hwMap.colorSensor.get("seeing_red_makes_u_blue");
         //TopGlyphCensor = hwMap.colorSensor.get("top_glyph_sensor");
-        topGlyphDist   = hwMap.get(DistanceSensor.class, "top_glyph_sensor");
-        bottGlyphDist  = hwMap.get(DistanceSensor.class, "bott_glyph_sensor");
+        topGlyphDist        = hwMap.get(DistanceSensor.class, "top_glyph_sensor");
+        bottGlyphDist       = hwMap.get(DistanceSensor.class, "bott_glyph_sensor");
 
         leftMotor.setDirection(DcMotor.Direction.REVERSE);              // Set to REVERSE if using AndyMark motors
         rightMotor.setDirection(DcMotor.Direction.FORWARD);             // Set to FORWARD if using AndyMark motors
-        lifterMotor.setDirection(DcMotor.Direction.REVERSE);            // Set to FORWARD if using AndyMark motors
+        lifterMotor.setDirection(DcMotor.Direction.FORWARD);            // Set to FORWARD if using AndyMark motors
+        relicOut.setDirection(DcMotor.Direction.FORWARD);
+
+        relicIn.setDirection(CRServo.Direction.FORWARD);
+        relicElbow.setDirection(CRServo.Direction.FORWARD);
 
 
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);         // Set leftMotor to RUN_WITHOUT_ENCODER
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);        // Set rightMotor to RUN_WITHOUT_ENCODER
+        relicOut.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Set all motors to zero power //
         leftMotor.setPower(0);
@@ -259,9 +256,13 @@ public class HardwareCatBot
         lifterMotor.setPower(0);
         LEDblue.setPower(0);
         LEDred.setPower(0);
+        relicIn.setPower(0);
+        relicOut.setPower(0);
+        relicElbow.setPower(0);
 
         // Set all continuous rotation servos to zero power //
         intakeRotateyThing.setPosition(SERVO_NEUTRAL_POWER);
+
 
         // Set all motors to run without encoders.
         runNoEncoders();
@@ -369,19 +370,6 @@ public class HardwareCatBot
         }
         return Angle;
     }
-    public void relicArmIn(){
-        relicIn.setPower(0.8);
-        relicOut.setPower(-0.1);
-    }
-    public void relicArmOut(){
-        relicIn.setPower(-0.1);
-        relicOut.setPower(0.8);
-    }
-    public void relicArmStop(){
-        relicIn.setPower(0.0);
-        relicOut.setPower(0.0);
-    }
-
 
 
     /*
@@ -952,6 +940,9 @@ public class HardwareCatBot
     public void shutDownVuforia(){
         relicTrackables.deactivate();
     }
+
+
+
     /**
      * ---   __________________   ---
      * ---   LED light Methods    ---
@@ -1040,6 +1031,26 @@ public class HardwareCatBot
         double dogeAngle = 0;
 
         return dogeAngle = (dogeCVinput - 400.0)/800.0;
+    }
+
+
+
+    /**
+     * ---   ______________________   ---
+     * ---   Code for our relic arm   ---
+     * ---   \/ \/ \/ \/ \/ \/ \/     ---
+     */
+    public void relicArmIn(){
+        relicIn.setPower(0.8);
+        relicOut.setPower(-0.1);
+    }
+    public void relicArmOut(){
+        relicIn.setPower(-0.1);
+        relicOut.setPower(0.8);
+    }
+    public void relicArmStop(){
+        relicIn.setPower(0.0);
+        relicOut.setPower(0.0);
     }
 
 

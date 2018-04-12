@@ -148,7 +148,7 @@ public class ShulesTeleOp extends LinearOpMode {
              */
 
             // lifter motor code //
-            if (gamepad2.a) {
+            if (gamepad2.x) {
                 lifterPowerAdd = 0.15;
             } else {
                 lifterPowerAdd = 0.00;
@@ -167,9 +167,9 @@ public class ShulesTeleOp extends LinearOpMode {
             } else if (intakeRotateSpeed < 0.0) {
                 intakeRotateSpeed = 1.0;
             }
-
-            // Actually move the servo
+            // Actually rotate the intake
             robot.intakeRotateyThing.setPosition(intakeRotateSpeed);
+
 
             // code for the intake motors //
             robot.intakeMotorLeft.setPower(gamepad2.left_trigger);
@@ -181,20 +181,32 @@ public class ShulesTeleOp extends LinearOpMode {
                 robot.intakeMotorRight.setPower(-0.8);
             }
 
-            if (gamepad2.dpad_up){
+
+            // Relic Arm IN and OUT //
+            if (gamepad2.dpad_left) {
                 robot.relicArmOut();
-            } else if (gamepad2.dpad_down){
+            } else if (gamepad2.dpad_right) {
                 robot.relicArmIn();
             } else {
                 robot.relicArmStop();
             }
 
-            if (gamepad2.dpad_left){
+
+            // Move the Elbow //
+            if (gamepad2.dpad_down){
                 robot.relicElbow.setPower(0.7);
-            } else if(gamepad2.dpad_right){
+            } else if(gamepad2.dpad_up){
                 robot.relicElbow.setPower(-0.7);
             } else {
                 robot.relicElbow.setPower(0.0);
+            }
+
+
+            // Gripper code //
+            if (gamepad2.a) {
+                robot.relicGripper.setPosition(robot.RELIC_GRIPPER_CLOSE);
+            } else if (gamepad2.b) {
+                robot.relicGripper.setPosition(robot.RELIC_GRIPPER_OPEN);
             }
 
 
