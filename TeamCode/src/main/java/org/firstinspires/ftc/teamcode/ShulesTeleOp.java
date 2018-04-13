@@ -194,9 +194,9 @@ public class ShulesTeleOp extends LinearOpMode {
 
             // Move the Elbow //
             if (gamepad2.dpad_down){
-                robot.relicElbow.setPower(0.7);
-            } else if(gamepad2.dpad_up){
                 robot.relicElbow.setPower(-0.7);
+            } else if(gamepad2.dpad_up){
+                robot.relicElbow.setPower(0.9);
             } else {
                 robot.relicElbow.setPower(0.0);
             }

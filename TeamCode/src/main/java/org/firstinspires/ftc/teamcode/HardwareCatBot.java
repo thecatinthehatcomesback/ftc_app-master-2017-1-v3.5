@@ -243,7 +243,7 @@ public class HardwareCatBot
         relicOut.setDirection(DcMotor.Direction.FORWARD);
 
         relicIn.setDirection(CRServo.Direction.FORWARD);
-        relicElbow.setDirection(CRServo.Direction.FORWARD);
+        relicElbow.setDirection(CRServo.Direction.REVERSE);
 
 
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);         // Set leftMotor to RUN_WITHOUT_ENCODER
