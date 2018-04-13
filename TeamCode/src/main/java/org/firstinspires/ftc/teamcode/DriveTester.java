@@ -71,6 +71,8 @@ public class DriveTester extends LinearOpMode {
             telemetry.update();
         }
 
+        robot.IMUinit();
+
         /*\
         * Runs after hit start
         * DO STUFF FOR MODE!!!!!!!!!!!
