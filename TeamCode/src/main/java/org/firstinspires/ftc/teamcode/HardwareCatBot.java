@@ -504,6 +504,9 @@ public class HardwareCatBot
                         Tilt >90 would be forwards
                     */
                 // Display it for the driver
+                Log.d("catbot", String.format("encoderDrive targ[%5d,%5d], curr[%5d,%5d] power [%.3f,%.3f]",
+                        newLeftTarget,  newRightTarget,leftPosition, rightPosition, leftSpeed, rightSpeed));
+
                 opMode.telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
                 opMode.telemetry.addData("Path2",  "Running at %7d :%7d", leftPosition, rightPosition);
                 opMode.telemetry.addData("Power", "left %.3f right %.3f", leftSpeed, rightSpeed);
