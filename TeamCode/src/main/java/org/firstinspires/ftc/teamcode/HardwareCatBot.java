@@ -117,6 +117,7 @@ public class HardwareCatBot
     static final double     JEWEL_DOWN              = 0.35;
 
     static final double     RELIC_GRIPPER_OPEN      = 0.05;
+    static final double     RELIC_GRIPPER_GRAB      = 0.70;
     static final double     RELIC_GRIPPER_CLOSE     = 0.95;
 
     static final double     LEDpower                = 1.0;

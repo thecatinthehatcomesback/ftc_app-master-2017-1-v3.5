@@ -56,6 +56,10 @@ public class ShulesTeleOp extends LinearOpMode {
         double intakeRotateSpeed;
         double lifterPowerAdd;
 
+        // Jackson...
+        boolean jacksonMode = false;
+        boolean relicGripped = false;
+
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -147,67 +151,140 @@ public class ShulesTeleOp extends LinearOpMode {
              * ---------    \/ \/ \/ \/ \/      ---------
              */
 
-            // lifter motor code //
-            if (gamepad2.x) {
-                lifterPowerAdd = 0.15;
-            } else {
-                lifterPowerAdd = 0.00;
+            // SWITCH MODES //
+            if (gamepad2.a && gamepad2.b && gamepad2.guide) {
+                if (jacksonMode) {
+                    jacksonMode = false;
+                } else if (!jacksonMode) {
+                    jacksonMode = true;
+                }
             }
-            //// TODO: 1/27/2018 Add touch sensors to robot to detect the top and bottom of the lifter arm
-            robot.lifterMotor.setPower(-gamepad2.left_stick_y + lifterPowerAdd);  // Added a little bit to keep the heavy intake up...
-            robot.periodicTeleOpTask();
+
+
+            if (!jacksonMode) {
+                // lifter motor code //
+                if (gamepad2.x) {
+                    lifterPowerAdd = 0.15;
+                } else {
+                    lifterPowerAdd = 0.00;
+                }
+                //// TODO: 1/27/2018 Add touch sensors to robot to detect the top and bottom of the lifter arm
+                robot.lifterMotor.setPower(-gamepad2.left_stick_y + lifterPowerAdd);  // Added a little bit to keep the heavy intake up...
+                robot.periodicTeleOpTask();
 
 
             /* --- servo rotatey thingy --- */
-            // Set the servo speed...
-            intakeRotateSpeed = robot.SERVO_NEUTRAL_POWER; // - gamepad2.right_stick_x/2;
-            // Fail safe code for when the end of the world comes...
-            if (intakeRotateSpeed > 1.0) {
-                intakeRotateSpeed = 1.0;
-            } else if (intakeRotateSpeed < 0.0) {
-                intakeRotateSpeed = 1.0;
-            }
-            // Actually rotate the intake
-            robot.intakeRotateyThing.setPosition(intakeRotateSpeed);
+                // Set the servo speed...
+                intakeRotateSpeed = robot.SERVO_NEUTRAL_POWER - gamepad2.right_stick_x/2;
+                // Fail safe code for when the end of the world comes...
+                if (intakeRotateSpeed > 1.0) {
+                    intakeRotateSpeed = 1.0;
+                } else if (intakeRotateSpeed < 0.0) {
+                    intakeRotateSpeed = 1.0;
+                }
+                // Actually rotate the intake
+                robot.intakeRotateyThing.setPosition(intakeRotateSpeed);
 
 
-            // code for the intake motors //
-            robot.intakeMotorLeft.setPower(gamepad2.left_trigger);
-            robot.intakeMotorRight.setPower(gamepad2.right_trigger);
-            if (gamepad2.left_bumper){
-                robot.intakeMotorLeft.setPower(-0.8);
-            }
-            if (gamepad2.right_bumper){
-                robot.intakeMotorRight.setPower(-0.8);
-            }
+                // code for the intake motors //
+                robot.intakeMotorLeft.setPower(gamepad2.left_trigger);
+                robot.intakeMotorRight.setPower(gamepad2.right_trigger);
+                if (gamepad2.left_bumper) {
+                    robot.intakeMotorLeft.setPower(-0.8);
+                }
+                if (gamepad2.right_bumper) {
+                    robot.intakeMotorRight.setPower(-0.8);
+                }
 
 
-            // Relic Arm IN and OUT //
-            if (gamepad2.dpad_left) {
-                robot.relicArmOut();
-            } else if (gamepad2.dpad_right) {
-                robot.relicArmIn();
+                // Relic Arm IN and OUT //
+                if (gamepad2.dpad_left) {
+                    robot.relicArmOut();
+                } else if (gamepad2.dpad_right) {
+                    robot.relicArmIn();
+                } else {
+                    robot.relicArmStop();
+                }
+
+
+                // Move the Elbow //
+                if (gamepad2.dpad_down) {
+                    robot.relicElbow.setPower(-0.7);
+                } else if (gamepad2.dpad_up) {
+                    robot.relicElbow.setPower(0.9);
+                } else {
+                    robot.relicElbow.setPower(0.0);
+                }
+
+
+                // Gripper code //
+                if (gamepad2.a) {
+                    robot.relicGripper.setPosition(robot.RELIC_GRIPPER_CLOSE);
+                } else if (gamepad2.b) {
+                    robot.relicGripper.setPosition(robot.RELIC_GRIPPER_GRAB);
+                } else if (gamepad2.y) {
+                    robot.relicGripper.setPosition(robot.RELIC_GRIPPER_OPEN);
+                }
+
             } else {
-                robot.relicArmStop();
+                /**
+                 * Jackson:
+                 *      Intake is triggers...
+                 *      Up and DOWN are intake motor powers...
+                 *
+                 *      B extend the relic arm...
+                 *      X coming back in relic arm...
+                 *      Left stick = elbow
+                 *      right stick click = open/close
+                 *
+                 *
+                 */
+
+                // code for the intake motors //
+                robot.intakeMotorLeft.setPower(gamepad2.left_trigger);
+                robot.intakeMotorRight.setPower(gamepad2.right_trigger);
+                if (gamepad2.left_bumper) {
+                    robot.intakeMotorLeft.setPower(-0.8);
+                }
+                if (gamepad2.right_bumper) {
+                    robot.intakeMotorRight.setPower(-0.8);
+                }
+
+                // Jackson's special way with the lifter motor //
+                if (gamepad2.dpad_up) {
+                    robot.lifterMotor.setPower(0.8);
+                } else if (gamepad2.dpad_down) {
+                    robot.lifterMotor.setPower(-0.8);
+                }
+                robot.periodicTeleOpTask();
+
+
+                // Jackson's Relic Arm IN and OUT //
+                if (gamepad2.b) {
+                    robot.relicArmOut();
+                } else if (gamepad2.x) {
+                    robot.relicArmIn();
+                } else {
+                    robot.relicArmStop();
+                }
+
+                // code for Jackson's elbow //
+                robot.relicElbow.setPower(-gamepad2.left_stick_y);
+
+                // Jackson's set the relic gripper //
+                if (gamepad2.right_stick_button && relicGripped) {
+                    robot.relicGripper.setPosition(robot.RELIC_GRIPPER_OPEN);
+                } else if (gamepad2.right_stick_button && !relicGripped) {
+                    robot.relicGripper.setPosition(robot.RELIC_GRIPPER_GRAB);
+                } else if (gamepad2.y) {
+                    robot.relicGripper.setPosition(robot.RELIC_GRIPPER_CLOSE);
+                }
             }
 
 
-            // Move the Elbow //
-            if (gamepad2.dpad_down){
-                robot.relicElbow.setPower(-0.7);
-            } else if(gamepad2.dpad_up){
-                robot.relicElbow.setPower(0.9);
-            } else {
-                robot.relicElbow.setPower(0.0);
-            }
 
 
-            // Gripper code //
-            if (gamepad2.a) {
-                robot.relicGripper.setPosition(robot.RELIC_GRIPPER_CLOSE);
-            } else if (gamepad2.b) {
-                robot.relicGripper.setPosition(robot.RELIC_GRIPPER_OPEN);
-            }
+
 
 
             /**
