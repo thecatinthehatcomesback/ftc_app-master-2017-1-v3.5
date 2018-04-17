@@ -52,10 +52,12 @@ public class ShulesTeleOp extends LinearOpMode {
 
         // go
         runtime.reset();
+        driveModeSwitch.reset();
         double driveSpeed;
         double intakeRotateSpeed;
         double lifterPowerAdd;
 
+        //// TODO: 4/16/2018 Make JACKSON MODE WORK!
         // Jackson...
         boolean jacksonMode = false;
         boolean relicGripped = false;
@@ -151,16 +153,6 @@ public class ShulesTeleOp extends LinearOpMode {
              * ---------    \/ \/ \/ \/ \/      ---------
              */
 
-            // SWITCH MODES //
-            if (gamepad2.a && gamepad2.b && gamepad2.guide) {
-                if (jacksonMode) {
-                    jacksonMode = false;
-                } else if (!jacksonMode) {
-                    jacksonMode = true;
-                }
-            }
-
-
             if (!jacksonMode) {
                 // lifter motor code //
                 if (gamepad2.x) {
@@ -226,6 +218,7 @@ public class ShulesTeleOp extends LinearOpMode {
                     robot.relicGripper.setPosition(robot.RELIC_GRIPPER_OPEN);
                 }
 
+
             } else {
                 /**
                  * Jackson:
@@ -255,6 +248,8 @@ public class ShulesTeleOp extends LinearOpMode {
                     robot.lifterMotor.setPower(0.8);
                 } else if (gamepad2.dpad_down) {
                     robot.lifterMotor.setPower(-0.8);
+                } else {
+                    robot.lifterMotor.setPower(0.0);
                 }
                 robot.periodicTeleOpTask();
 
@@ -269,13 +264,15 @@ public class ShulesTeleOp extends LinearOpMode {
                 }
 
                 // code for Jackson's elbow //
-                robot.relicElbow.setPower(-gamepad2.left_stick_y);
+                robot.relicElbow.setPower(-gamepad2.left_stick_y/0.9);
 
                 // Jackson's set the relic gripper //
                 if (gamepad2.right_stick_button && relicGripped) {
                     robot.relicGripper.setPosition(robot.RELIC_GRIPPER_OPEN);
+                    relicGripped = false;
                 } else if (gamepad2.right_stick_button && !relicGripped) {
                     robot.relicGripper.setPosition(robot.RELIC_GRIPPER_GRAB);
+                    relicGripped = true;
                 } else if (gamepad2.y) {
                     robot.relicGripper.setPosition(robot.RELIC_GRIPPER_CLOSE);
                 }
@@ -292,6 +289,7 @@ public class ShulesTeleOp extends LinearOpMode {
              * ---   TELEMETRY   ---
              * ---   \/ \/ \/    ---
              */
+            telemetry.addData("Jackson MODE:", jacksonMode);
             telemetry.addData("ArmIndex Pos:", robot.armIndex);
             telemetry.addData("(GP2.right_stick) LiterPos", "Target: %2d Current: %2d", robot.lifterMotor.getTargetPosition(), robot.lifterMotor.getCurrentPosition());
             telemetry.addData("(GP1.x + y + dPadUp)DriveMode:", driveMode);
