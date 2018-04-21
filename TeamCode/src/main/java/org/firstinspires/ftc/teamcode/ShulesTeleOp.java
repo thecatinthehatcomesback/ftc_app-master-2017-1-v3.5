@@ -59,8 +59,7 @@ public class ShulesTeleOp extends LinearOpMode {
 
         //// TODO: 4/16/2018 Make JACKSON MODE WORK!
         // Jackson...
-        boolean jacksonMode = false;
-        boolean relicGripped = false;
+        boolean jacksonMode = true;
 
 
         // run until the end of the match (driver presses STOP)
@@ -244,13 +243,7 @@ public class ShulesTeleOp extends LinearOpMode {
                 }
 
                 // Jackson's special way with the lifter motor //
-                if (gamepad2.dpad_up) {
-                    robot.lifterMotor.setPower(0.8);
-                } else if (gamepad2.dpad_down) {
-                    robot.lifterMotor.setPower(-0.8);
-                } else {
-                    robot.lifterMotor.setPower(0.0);
-                }
+                robot.lifterMotor.setPower(-gamepad2.right_stick_y);
                 robot.periodicTeleOpTask();
 
 
@@ -267,14 +260,10 @@ public class ShulesTeleOp extends LinearOpMode {
                 robot.relicElbow.setPower(-gamepad2.left_stick_y/0.9);
 
                 // Jackson's set the relic gripper //
-                if (gamepad2.right_stick_button && relicGripped) {
+                if (gamepad2.a) {
                     robot.relicGripper.setPosition(robot.RELIC_GRIPPER_OPEN);
-                    relicGripped = false;
-                } else if (gamepad2.right_stick_button && !relicGripped) {
-                    robot.relicGripper.setPosition(robot.RELIC_GRIPPER_GRAB);
-                    relicGripped = true;
                 } else if (gamepad2.y) {
-                    robot.relicGripper.setPosition(robot.RELIC_GRIPPER_CLOSE);
+                    robot.relicGripper.setPosition(robot.RELIC_GRIPPER_GRAB);
                 }
             }
 

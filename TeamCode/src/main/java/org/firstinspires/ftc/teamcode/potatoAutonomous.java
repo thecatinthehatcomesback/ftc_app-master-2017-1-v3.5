@@ -186,8 +186,7 @@ public class potatoAutonomous extends LinearOpMode {
             robot.encoderDrive(HardwareCatBot.CREEP_SPEED, 5, 4, HardwareCatBot.DRIVE_MODE.driveStraight);
             robot.encoderDrive(HardwareCatBot.CREEP_SPEED, 20, 4, HardwareCatBot.DRIVE_MODE.driveOffBalance);
             // Turn to center
-            robot.absoluteGyro(0.4, 0, 1.0, HardwareCatBot.TURN_MODE.PIVOT);
-
+            robot.absoluteGyro(1.0, -30, 2.0, HardwareCatBot.TURN_MODE.PIVOT);
         }
 
         robot.jewelSmackerUp();
@@ -553,14 +552,14 @@ public class potatoAutonomous extends LinearOpMode {
             case LEFT:
                 Log.d("catbot", "left");
                 robot.jewelFlipperLeft();
-                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 166, 5, HardwareCatBot.TURN_MODE.PIVOT);
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 160, 5, HardwareCatBot.TURN_MODE.PIVOT);
                 robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 3, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
                 break;
         }
 
         // Spit out the Glyph...
         robot.mecanumOut();
-        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 5.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
+        robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 15.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
         robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, -7.0, 2.0, HardwareCatBot.DRIVE_MODE.driveStraight);
         robot.mecanumStop();
         robot.lifterStepDown();

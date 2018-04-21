@@ -21,8 +21,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 @Disabled
+
 @Autonomous(name="Pineapple Autonomous", group="CatAuto")
 public class pineappleAutonomous extends LinearOpMode {
 
@@ -535,7 +535,6 @@ public class pineappleAutonomous extends LinearOpMode {
         // Turn to center
         //robot.absoluteGyro(0.4, 90, 1.0, HardwareCatBot.TURN_MODE.PIVOT);
 
-
         switch (mission) {
 
             case RIGHT:
@@ -555,7 +554,7 @@ public class pineappleAutonomous extends LinearOpMode {
             case LEFT:
                 Log.d("catbot", "left");
                 robot.jewelFlipperLeft();
-                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 166, 5, HardwareCatBot.TURN_MODE.PIVOT);
+                robot.absoluteGyro(HardwareCatBot.TURN_SPEED, 90, 5, HardwareCatBot.TURN_MODE.PIVOT);
                 robot.encoderDrive(HardwareCatBot.DRIVE_SPEED, 3, 2, HardwareCatBot.DRIVE_MODE.driveStraight);
                 break;
         }

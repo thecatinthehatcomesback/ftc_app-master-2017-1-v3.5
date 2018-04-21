@@ -106,7 +106,7 @@ public class HardwareCatBot
 
     static final double     ARM_UP                  = 0.56;
     static final double     ARM_ALMOST_UP           = ARM_UP * 3/4;
-    static final double     ARM_DOWN                = 0.2;
+    static final double     ARM_DOWN                = 0.0;
     static final double     FLIPPER_LEFT            = 1.0;
     static final double     FLIPPER_CENTER          = 0.45;
     static final double     FLIPPER_RIGHT           = 0.0;
