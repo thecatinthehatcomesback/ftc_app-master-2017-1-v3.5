@@ -186,7 +186,7 @@ public class potatoAutonomous extends LinearOpMode {
             robot.encoderDrive(HardwareCatBot.CREEP_SPEED, 5, 4, HardwareCatBot.DRIVE_MODE.driveStraight);
             robot.encoderDrive(HardwareCatBot.CREEP_SPEED, 20, 4, HardwareCatBot.DRIVE_MODE.driveOffBalance);
             // Turn to center
-            robot.absoluteGyro(1.0, -30, 2.0, HardwareCatBot.TURN_MODE.PIVOT);
+            robot.absoluteGyro(1., -30, 2.0, HardwareCatBot.TURN_MODE.PIVOT);
         }
 
         robot.jewelSmackerUp();

@@ -604,12 +604,12 @@ public class HardwareCatBot
 
                 int zVal = getAngle();
 
-                if ((prevGyro < 0) && (zVal > 0) && (leftTurn)) {
+                /*if ((prevGyro < 0) && (zVal > 0) && (leftTurn)) {
                     wrapAdjust += 360;
                 }
                 if ((prevGyro > 0) && (zVal < 0) && (!leftTurn)) {
                     wrapAdjust -= 360;
-                }
+                }*/
                 if (prevGyro != zVal) {
 
                     prevGyro = zVal;
